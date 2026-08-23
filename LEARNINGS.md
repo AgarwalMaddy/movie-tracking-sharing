@@ -4,6 +4,12 @@ Newest entries first. Keep entries short — one insight per bullet cluster.
 
 ---
 
+## 2026-08-24 — Neon project provisioned
+
+- Neon project `raspy-haze-49639619` (org Madhur Agarwal); DB `neondb`.
+- Prisma `init` migration applied; all V1 tables present.
+- Local `.env` / `.env.local` hold `DATABASE_URL` (gitignored). Prisma CLI reads `.env`.
+
 ## 2026-08-24 — Neon, ARM Prisma, Figma
 
 - Chose **Neon** over Supabase for free-tier/Vercel fit (Postgres only).

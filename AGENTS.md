@@ -35,7 +35,7 @@ Each user has a personal watch library and sends private suggestions to friends.
 | Spec | Approved — `docs/specs/v1-technical-specification.md` |
 | Implementation plan | Written — `docs/superpowers/plans/2026-08-23-v1-implementation.md` |
 | Application code | In progress on `feat/v1-implementation` |
-| Blocker | Neon `DATABASE_URL` + `npx prisma migrate dev` |
+| Blocker | None for DB — Neon project `raspy-haze-49639619` migrated |
 
 **Do not expand V1 scope.** Implementation is underway on branch `feat/v1-implementation`.
 
