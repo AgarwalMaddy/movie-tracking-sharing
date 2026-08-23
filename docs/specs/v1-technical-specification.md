@@ -1,7 +1,7 @@
 # V1 Technical Specification — Movie Tracking & Sharing
 
-**Version:** 1.0-draft  
-**Status:** Pending review  
+**Version:** 1.0  
+**Status:** Approved  
 **Last updated:** 2026-08-23
 
 ---

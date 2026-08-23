@@ -32,12 +32,12 @@ Each user has a personal watch library and sends private suggestions to friends.
 
 | Item | State |
 |------|-------|
-| Spec | Draft — `docs/specs/v1-technical-specification.md` |
+| Spec | Approved — `docs/specs/v1-technical-specification.md` |
 | Implementation plan | Written — `docs/superpowers/plans/2026-08-23-v1-implementation.md` |
-| Application code | Not started |
-| Blocker | Formal **spec approval** required before implementation (§14 product questions resolved) |
+| Application code | In progress on `feat/v1-implementation` |
+| Blocker | Local PostgreSQL + Prisma engine setup on dev machine |
 
-**Do not scaffold or implement features until the user approves the spec.**
+**Do not expand V1 scope.** Implementation is underway on branch `feat/v1-implementation`.
 
 ---
 

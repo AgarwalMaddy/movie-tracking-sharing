@@ -4,6 +4,12 @@ Newest entries first. Keep entries short — one insight per bullet cluster.
 
 ---
 
+## 2026-08-23 — V1 inline implementation started
+
+- Branch: `feat/v1-implementation`
+- Tasks 1–12 scaffolded: Next.js 15, Prisma schema, auth, TMDB, library, friends, suggestions, feed
+- Blockers on this machine: Docker unavailable; Prisma query engine arch mismatch — need local Postgres + `npx prisma migrate dev`
+
 ## 2026-08-23 — Spec §14 locked
 
 - Email verification required for email/password; Google OAuth counts as verified.
