@@ -1,0 +1,44 @@
+---
+description: Maintain AGENTS.md, DESIGN.md, LEARNINGS.md, and specs with Notion sync
+alwaysApply: true
+---
+
+# Project Documentation Maintenance
+
+Read `AGENTS.md` at the start of every session on this repo.
+
+## Documentation files
+
+| File | Purpose |
+|------|---------|
+| `AGENTS.md` | Agent onboarding, stack, scope, workflow |
+| `DESIGN.md` | UI/UX and product design decisions (append-only log) |
+| `LEARNINGS.md` | Session learnings (newest first) |
+| `docs/specs/v1-technical-specification.md` | Canonical V1 spec |
+| `docs/README.md` | Documentation index |
+
+## When to update
+
+- **Scope/architecture/API change** → update spec + `DESIGN.md` decision log
+- **UI/UX decision** → append to `DESIGN.md`
+- **Session end or significant discovery** → prepend entry to `LEARNINGS.md`
+- **New doc file** → add to `docs/README.md`, `AGENTS.md` map, and `docs/CHANGELOG.md`
+- **Onboarding/stack change** → update `AGENTS.md` and `README.md`
+- **New risk or open decision** → add row to `docs/risk-register.md`
+- **Any markdown prose edit** → run `@humanize-docs` before finishing
+
+## Dual sync (local + Notion)
+
+Local filesystem is source of truth. After meaningful doc changes:
+1. Commit to git (when user requests)
+2. Sync summary to Notion Project Hub
+
+Use skill `@maintain-project-docs` for the full workflow.
+
+## V1 scope guard
+
+Do not expand V1 scope (groups, auto-tracking, algorithms) without explicit user approval. Document deferred items in spec §2 only.
+
+## Spec-first development
+
+No feature implementation until V1 spec is approved. Reference spec section numbers in PR descriptions.

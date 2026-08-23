@@ -1,0 +1,19 @@
+---
+description: Humanize markdown prose; avoid AI writing patterns in project docs
+globs: "**/*.md"
+alwaysApply: false
+---
+
+# Humanize writing
+
+When creating or editing markdown in this repo:
+
+1. Invoke `@humanize-docs` (or `@humanizer` for pasted text).
+2. Remove stock AI phrasing: delve, crucial, pivotal, landscape, showcase, underscore, vibrant, fostering, "it's not just X but Y", "let's dive in".
+3. Use sentence-case headings. Minimal bold. No emoji in headings.
+4. Keep facts, links, tables, and code unchanged.
+5. Technical docs stay direct and neutral.
+
+**Good:** "V1 uses manual library tracking. OTT sync is deferred to V2."
+
+**Bad:** "V1 serves as a crucial foundation, showcasing our commitment to a vibrant social landscape."
