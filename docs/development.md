@@ -1,19 +1,20 @@
 # Development guide
 
-The app scaffold does not exist yet. This page describes the planned setup from the V1 spec and implementation plan. Update it when Task 1 (project initialization) lands.
+Local setup for the V1 Next.js app on branch `feat/v1-implementation`.
 
 ## Prerequisites
 
 - Node.js 20+
-- Docker (local PostgreSQL) or a hosted Postgres URL
+- PostgreSQL 14+ (Docker, local install, or Neon/Supabase URL)
 - TMDB API key — [themoviedb.org/settings/api](https://www.themoviedb.org/settings/api)
-- Google OAuth credentials
+- Google OAuth credentials (optional for dev)
+- Resend API key (optional; verification URL logs to console without it)
 
-## Local setup (planned)
+## Local setup
 
 ```bash
-cp .env.example .env.local
-# Set DATABASE_URL, NEXTAUTH_*, GOOGLE_*, TMDB_API_KEY
+cp .env.local.example .env.local
+# Set DATABASE_URL, NEXTAUTH_SECRET, AUTH_SECRET, NEXTAUTH_URL, TMDB_API_KEY
 
 npm install
 npx prisma migrate dev
@@ -27,22 +28,23 @@ Dev server: `http://localhost:3000`
 | Variable | Required | Notes |
 |----------|----------|-------|
 | `DATABASE_URL` | Yes | PostgreSQL connection string |
-| `NEXTAUTH_SECRET` | Yes | `openssl rand -base64 32` |
+| `NEXTAUTH_SECRET` | Yes | 32+ chars; also set `AUTH_SECRET` to the same value |
 | `NEXTAUTH_URL` | Yes | `http://localhost:3000` in dev |
-| `GOOGLE_CLIENT_ID` | Yes | OAuth client ID |
-| `GOOGLE_CLIENT_SECRET` | Yes | OAuth client secret |
+| `GOOGLE_CLIENT_ID` | No | OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | No | OAuth client secret |
 | `TMDB_API_KEY` | Yes | Server-side only |
+| `RESEND_API_KEY` | No | Email verification; logs link if unset |
 
-## Scripts (planned)
+## Scripts
 
 | Command | Purpose |
 |---------|---------|
 | `npm run dev` | Dev server |
 | `npm run build` | Production build |
-| `npm test` | Vitest |
-| `npm run test:e2e` | Playwright |
+| `npm test` | Vitest unit tests |
+| `npm run test:e2e` | Playwright (run `npx playwright install` first) |
 
-## Layout (planned)
+## Layout
 
 ```
 src/features/
