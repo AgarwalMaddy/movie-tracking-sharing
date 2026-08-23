@@ -1,5 +1,9 @@
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
+  // Windows ARM64 has no native Prisma Node-API engines yet
+  // (prisma/prisma#15306). Binary engine runs as a sidecar so
+  // Windows can translate x64. Production (Vercel linux) ignores this.
+  engineType = "binary"
 }
 
 datasource db {

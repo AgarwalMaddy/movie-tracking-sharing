@@ -4,6 +4,13 @@ Newest entries first. Keep entries short — one insight per bullet cluster.
 
 ---
 
+## 2026-08-24 — Neon, ARM Prisma, Figma
+
+- Chose **Neon** over Supabase for free-tier/Vercel fit (Postgres only).
+- Prisma Windows ARM is a known gap; fixed locally with `engineType = "binary"` (client loads; fails only if DB unreachable).
+- Figma: https://www.figma.com/design/hbE2tqULfyK9QOsHwxipTQ — Landing, Login, Library, Friends, Suggestions, Feed.
+- Aligned CSS primary/background to teal + warm paper from comps.
+
 ## 2026-08-23 — V1 inline implementation started
 
 - Branch: `feat/v1-implementation`
