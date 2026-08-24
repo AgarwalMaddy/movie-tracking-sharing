@@ -6,6 +6,11 @@ Format based on [Keep a Changelog](https://keepachangelog.com/). This repo is pr
 
 ## [Unreleased]
 
+### Changed
+
+- `DESIGN.md` — full-width header, mobile bottom nav, desktop 1440 Figma page
+- Figma `hbE2tqULfyK9QOsHwxipTQ` — 1440 desktop frames `D01`–`D06` on **V1 Mobile Screens**
+
 ### Added
 
 - Root `README.md` with status table and doc index

@@ -4,6 +4,31 @@ Newest entries first. Keep entries short — one insight per bullet cluster.
 
 ---
 
+## 2026-08-24 — Figma chrome + private GitHub repo
+
+- Mobile headers now FILL 390px; Library/Friends/Suggestions/Feed have a four-tab bottom nav.
+- 1440 desktop frames (`D01`–`D06`) sit on the same Figma page below the 390 mobile frames. A second page did not keep children after the plugin run.
+- App: hide top nav below `md`; `MobileNav` is fixed at the bottom. Repo: https://github.com/AgarwalMaddy/movie-tracking-sharing (private).
+
+## 2026-08-24 — Neon project provisioned
+
+- Neon project `raspy-haze-49639619` (org Madhur Agarwal); DB `neondb`.
+- Prisma `init` migration applied; all V1 tables present.
+- Local `.env` / `.env.local` hold `DATABASE_URL` (gitignored). Prisma CLI reads `.env`.
+
+## 2026-08-24 — Neon, ARM Prisma, Figma
+
+- Chose **Neon** over Supabase for free-tier/Vercel fit (Postgres only).
+- Prisma Windows ARM is a known gap; fixed locally with `engineType = "binary"` (client loads; fails only if DB unreachable).
+- Figma: https://www.figma.com/design/hbE2tqULfyK9QOsHwxipTQ — Landing, Login, Library, Friends, Suggestions, Feed.
+- Aligned CSS primary/background to teal + warm paper from comps.
+
+## 2026-08-23 — V1 inline implementation started
+
+- Branch: `feat/v1-implementation`
+- Tasks 1–12 scaffolded: Next.js 15, Prisma schema, auth, TMDB, library, friends, suggestions, feed
+- Blockers on this machine: Docker unavailable; Prisma query engine arch mismatch — need local Postgres + `npx prisma migrate dev`
+
 ## 2026-08-23 — Spec §14 locked
 
 - Email verification required for email/password; Google OAuth counts as verified.

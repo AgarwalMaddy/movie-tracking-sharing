@@ -10,7 +10,8 @@ Lightweight tracker for V1 risks and open decisions. Review when scope or archit
 | R4 | Friend library visibility undecided | Medium | Medium | **Decided:** accepted friends see full library; notes private (spec §14) | — | Mitigated |
 | R5 | Rating field scope creep | Low | Low | **Decided:** optional 1–10 rating in V1 (spec §14) | — | Mitigated |
 | R6 | Solo builder bandwidth | Medium | Medium | Stick to V1 scope guard; no groups/algorithms in V1 | — | Open |
-| R7 | Doc drift between repo and Notion | Low | Medium | Local repo wins; sync summaries via `@maintain-project-docs` | — | Mitigated |
+| R8 | Prisma on Windows ARM64 | High | High | **Mitigated:** `engineType=binary` (prisma#15306); optional x64 Node | — | Mitigated |
+| R9 | Neon cold starts on free tier | Medium | Low | Accept ~0.5s idle resume; warm traffic is fine for friend-group MVP | — | Open |
 
 ## How to use
 

@@ -32,12 +32,12 @@ Each user has a personal watch library and sends private suggestions to friends.
 
 | Item | State |
 |------|-------|
-| Spec | Draft — `docs/specs/v1-technical-specification.md` |
+| Spec | Approved — `docs/specs/v1-technical-specification.md` |
 | Implementation plan | Written — `docs/superpowers/plans/2026-08-23-v1-implementation.md` |
-| Application code | Not started |
-| Blocker | Formal **spec approval** required before implementation (§14 product questions resolved) |
+| Application code | In progress on `feat/v1-implementation` |
+| Blocker | None for DB — Neon project `raspy-haze-49639619` migrated |
 
-**Do not scaffold or implement features until the user approves the spec.**
+**Do not expand V1 scope.** Implementation is underway on branch `feat/v1-implementation`.
 
 ---
 
@@ -65,7 +65,7 @@ Groups, playlists, OTT auto-tracking, browser extension, recommendation algorith
 |-------|--------|
 | Framework | Next.js 15 App Router |
 | Language | TypeScript (strict) |
-| Database | PostgreSQL + Prisma |
+| Database | PostgreSQL via **Neon** (Prisma) |
 | Auth | NextAuth.js v5 (email + Google) |
 | UI | Tailwind CSS + shadcn/ui |
 | Metadata | TMDB API v3 (server-side only) |
