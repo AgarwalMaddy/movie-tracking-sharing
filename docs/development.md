@@ -38,7 +38,7 @@ Dev server: `http://localhost:3000`
 - Node.js 20+ (see Windows ARM note below)
 - Neon Postgres URL (or any Postgres URL)
 - TMDB API key — [themoviedb.org/settings/api](https://www.themoviedb.org/settings/api)
-- Google OAuth credentials (optional for dev)
+- Google OAuth credentials (optional for dev) — see [Google OAuth](#google-oauth) below
 - Resend API key (optional; verification URL logs to console without it)
 
 ## Windows ARM64 + Prisma
@@ -60,6 +60,19 @@ Prisma does **not** ship a native Windows ARM Node-API engine yet ([prisma#15306
 | `GOOGLE_CLIENT_SECRET` | No | OAuth client secret |
 | `TMDB_API_KEY` | Yes | Server-side only |
 | `RESEND_API_KEY` | No | Email verification; logs link if unset |
+
+## Google OAuth
+
+NextAuth uses the standard Google callback path: `/api/auth/callback/google`.
+
+In [Google Cloud Console](https://console.cloud.google.com/apis/credentials) → your OAuth client → **Authorized redirect URIs**, add both:
+
+```
+http://localhost:3000/api/auth/callback/google
+https://movie-tracking-sharing.vercel.app/api/auth/callback/google
+```
+
+Copy `client_id` and `client_secret` into `.env.local` as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. Keep `NEXTAUTH_URL` as `http://localhost:3000` for local dev.
 
 ## Scripts
 
