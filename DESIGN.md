@@ -4,6 +4,16 @@ Product and UI/UX decisions. Newest first. Append only.
 
 ---
 
+## 2026-08-24 — Full-width chrome, mobile bottom nav, desktop 1440
+
+**Decision:** App chrome is full-width. Phone layouts use a four-tab bottom nav (Library, Friends, Suggestions, Feed). `md` and up keep those links in the top header. Figma file `hbE2tqULfyK9QOsHwxipTQ` page **V1 Mobile Screens** has 390 frames plus 1440 desktop frames (`D01`–`D06`) on the same canvas.
+
+**Rationale:** The first comps hugged the header (~265px), which left a dead gap on the right. The shipped app already stretched the bar; it still used desktop-style top links on a phone. Bottom nav is the mobile pattern; 1440 frames cover web.
+
+**Alternatives rejected:** Hamburger drawer; keeping top links on every breakpoint.
+
+**Spec ref:** spec §9, Figma `hbE2tqULfyK9QOsHwxipTQ`
+
 ## 2026-08-24 — Neon Postgres + Figma V1 screens
 
 **Decision:** Host V1 Postgres on **Neon** (not local Docker / not Supabase). Ship UI comps in Figma file [Movie Tracking — V1 Screens](https://www.figma.com/design/hbE2tqULfyK9QOsHwxipTQ) and align app tokens to warm paper + deep teal.

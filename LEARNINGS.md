@@ -4,6 +4,12 @@ Newest entries first. Keep entries short — one insight per bullet cluster.
 
 ---
 
+## 2026-08-24 — Figma chrome + private GitHub repo
+
+- Mobile headers now FILL 390px; Library/Friends/Suggestions/Feed have a four-tab bottom nav.
+- 1440 desktop frames (`D01`–`D06`) sit on the same Figma page below the 390 mobile frames. A second page did not keep children after the plugin run.
+- App: hide top nav below `md`; `MobileNav` is fixed at the bottom. Repo: https://github.com/AgarwalMaddy/movie-tracking-sharing (private).
+
 ## 2026-08-24 — Neon project provisioned
 
 - Neon project `raspy-haze-49639619` (org Madhur Agarwal); DB `neondb`.
