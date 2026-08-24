@@ -14,7 +14,9 @@ export const env = createEnv({
       .enum(["development", "test", "production"])
       .default("development"),
   },
-  client: {},
+  client: {
+    NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
+  },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
@@ -24,6 +26,7 @@ export const env = createEnv({
     TMDB_API_KEY: process.env.TMDB_API_KEY,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     NODE_ENV: process.env.NODE_ENV,
+    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
 })
