@@ -1,5 +1,5 @@
 ---
-description: Maintain AGENTS.md, DESIGN.md, LEARNINGS.md, and specs with Notion sync
+description: Maintain AGENTS.md, docs/DESIGN.md, docs/LEARNINGS.md, and specs with Notion sync
 alwaysApply: true
 ---
 
@@ -12,16 +12,16 @@ Read `AGENTS.md` at the start of every session on this repo.
 | File | Purpose |
 |------|---------|
 | `AGENTS.md` | Agent onboarding, stack, scope, workflow |
-| `DESIGN.md` | UI/UX and product design decisions (append-only log) |
-| `LEARNINGS.md` | Session learnings (newest first) |
+| `docs/DESIGN.md` | UI/UX and product design decisions (append-only log) |
+| `docs/LEARNINGS.md` | Session learnings (newest first) |
 | `docs/specs/v1-technical-specification.md` | Canonical V1 spec |
 | `docs/README.md` | Documentation index |
 
 ## When to update
 
-- **Scope/architecture/API change** → update spec + `DESIGN.md` decision log
-- **UI/UX decision** → append to `DESIGN.md`
-- **Session end or significant discovery** → prepend entry to `LEARNINGS.md`
+- **Scope/architecture/API change** → update spec + `docs/DESIGN.md` decision log
+- **UI/UX decision** → append to `docs/DESIGN.md`
+- **Session end or significant discovery** → prepend entry to `docs/LEARNINGS.md`
 - **New doc file** → add to `docs/README.md`, `AGENTS.md` map, and `docs/CHANGELOG.md`
 - **Onboarding/stack change** → update `AGENTS.md` and `README.md`
 - **New risk or open decision** → add row to `docs/risk-register.md`

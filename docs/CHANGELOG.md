@@ -8,7 +8,9 @@ Format based on [Keep a Changelog](https://keepachangelog.com/). This repo is pr
 
 ### Changed
 
-- `DESIGN.md` — full-width header, mobile bottom nav, desktop 1440 Figma page
+- Moved `DESIGN.md` and `LEARNINGS.md` into `docs/`; removed redundant `CLAUDE.md` alias
+- Updated doc index, agent rules, and skills to match new paths
+- `docs/DESIGN.md` — full-width header, mobile bottom nav, desktop 1440 Figma page
 - Figma `hbE2tqULfyK9QOsHwxipTQ` — 1440 desktop frames `D01`–`D06` on **V1 Mobile Screens**
 
 ### Added

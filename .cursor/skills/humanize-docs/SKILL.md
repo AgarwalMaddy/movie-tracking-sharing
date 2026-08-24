@@ -1,7 +1,7 @@
 ---
 name: humanize-docs
 description: |
-  Humanizes project documentation (AGENTS.md, DESIGN.md, LEARNINGS.md, specs,
+  Humanizes project documentation (AGENTS.md, docs/DESIGN.md, docs/LEARNINGS.md, specs,
   README) to remove AI writing patterns. Use when creating or editing markdown
   docs in this repo, before committing doc changes, or when prose sounds generic.
 ---
@@ -12,7 +12,7 @@ Apply before finishing any documentation edit in this repo.
 
 ## When to run
 
-- New or substantially rewritten markdown in `docs/`, `AGENTS.md`, `DESIGN.md`, `LEARNINGS.md`, `README.md`
+- New or substantially rewritten markdown in `docs/`, `AGENTS.md`, `README.md`
 - After agent-generated doc drafts
 - Before Notion sync summaries (repo file is still source of truth)
 

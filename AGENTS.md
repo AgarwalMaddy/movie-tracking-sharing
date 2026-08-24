@@ -7,15 +7,15 @@
 ## Session start (in order)
 
 1. Read this file.
-2. Read `LEARNINGS.md` (latest entry only unless the task needs history).
+2. Read `docs/LEARNINGS.md` (latest entry only unless the task needs history).
 3. Read the spec section that matches your task (see table below).
-4. If the task touches UI, read recent entries in `DESIGN.md`.
+4. If the task touches UI, read recent entries in `docs/DESIGN.md`.
 5. Confirm the task is in V1 scope. If not, stop and ask the user.
 
 | Task type | Read first |
 |-----------|------------|
 | Feature implementation | `docs/specs/v1-technical-specification.md` (relevant §) |
-| UI/UX work | `DESIGN.md` + spec §9 |
+| UI/UX work | `docs/DESIGN.md` + spec §9 |
 | Architecture / API change | Spec §5–§8 + update spec before coding |
 | Doc updates | `@maintain-project-docs` skill |
 | Bootstrap / setup | `docs/superpowers/plans/2026-08-23-v1-implementation.md` |
@@ -55,7 +55,7 @@ Groups, playlists, OTT auto-tracking, browser extension, recommendation algorith
 
 - Default: defer to spec §2.2 and ask the user.
 - Never add out-of-scope features "while you're here."
-- Record approved scope changes in spec §2 and append `DESIGN.md`.
+- Record approved scope changes in spec §2 and append `docs/DESIGN.md`.
 
 ---
 
@@ -103,8 +103,8 @@ Groups, playlists, OTT auto-tracking, browser extension, recommendation algorith
 | `docs/specs/v1-technical-specification.md` | Canonical V1 spec |
 | `docs/superpowers/plans/2026-08-23-v1-implementation.md` | Task-by-task build plan |
 | `docs/superpowers/specs/2026-08-22-movie-tracking-v1-design.md` | Product design context |
-| `DESIGN.md` | Decision log (append-only, newest first) |
-| `LEARNINGS.md` | Session notes (local only, not synced to Notion) |
+| `docs/DESIGN.md` | Decision log (append-only, newest first) |
+| `docs/LEARNINGS.md` | Session notes (local only, not synced to Notion) |
 | `docs/README.md` | Full doc index |
 | `docs/development.md` | Local setup (after scaffold) |
 | `docs/risk-register.md` | Risks and open decisions |
@@ -120,8 +120,8 @@ Groups, playlists, OTT auto-tracking, browser extension, recommendation algorith
 
 1. Update docs if you changed scope, architecture, or product decisions.
 2. Run `@humanize-docs` on any edited markdown.
-3. Prepend `LEARNINGS.md` with session notes.
-4. Sync to Notion if spec, `AGENTS.md`, or `DESIGN.md` changed materially (`@maintain-project-docs`).
+3. Prepend `docs/LEARNINGS.md` with session notes.
+4. Sync to Notion if spec, `AGENTS.md`, or `docs/DESIGN.md` changed materially (`@maintain-project-docs`).
 5. Add `docs/CHANGELOG.md` entry if doc structure changed.
 
 ---

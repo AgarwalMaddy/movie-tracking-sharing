@@ -50,7 +50,7 @@ Product and UI/UX decisions. Newest first. Append only.
 
 ## 2026-08-22 — Documentation infrastructure
 
-**Decision:** Local repo is source of truth; Notion mirrors summaries. `LEARNINGS.md` stays local.  
+**Decision:** Local repo is source of truth; Notion mirrors summaries. `docs/LEARNINGS.md` stays local.  
 **Rationale:** Git history for agents; Notion for human browsing without duplicating every edit.  
 **Artifacts:** `.cursor/rules/project-documentation.mdc`, `@maintain-project-docs`
 

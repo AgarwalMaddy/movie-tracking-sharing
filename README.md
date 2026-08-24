@@ -26,7 +26,7 @@ V1 covers manual tracking and friend suggestions. OTT sync comes later.
 | Doc | What it's for |
 |-----|---------------|
 | [docs/README.md](docs/README.md) | Full index |
-| [DESIGN.md](DESIGN.md) | Product and UI decisions |
+| [docs/DESIGN.md](docs/DESIGN.md) | Product and UI decisions |
 | [docs/development.md](docs/development.md) | Local setup (after scaffold) |
 | [docs/risk-register.md](docs/risk-register.md) | Open risks and decisions |
 | [docs/CHANGELOG.md](docs/CHANGELOG.md) | What changed and when |

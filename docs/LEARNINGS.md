@@ -4,6 +4,12 @@ Newest entries first. Keep entries short — one insight per bullet cluster.
 
 ---
 
+## 2026-08-24 — Doc layout cleanup
+
+- Moved `DESIGN.md` and `LEARNINGS.md` to `docs/` to reduce root clutter.
+- Removed `CLAUDE.md` (one-line alias to `AGENTS.md`); Cursor uses `AGENTS.md` at repo root.
+- Config files (`next.config.ts`, Sentry, test runners) stay at root — framework convention.
+
 ## 2026-08-24 — Figma chrome + private GitHub repo
 
 - Mobile headers now FILL 390px; Library/Friends/Suggestions/Feed have a four-tab bottom nav.

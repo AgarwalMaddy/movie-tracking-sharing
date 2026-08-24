@@ -16,7 +16,7 @@ Lightweight tracker for V1 risks and open decisions. Review when scope or archit
 ## How to use
 
 1. Add a row when a new risk or unresolved decision appears.
-2. Move status to **Mitigated** when the spec or `DESIGN.md` records the decision.
+2. Move status to **Mitigated** when the spec or `docs/DESIGN.md` records the decision.
 3. Close rows that no longer apply.
 
 Cross-ref: spec [§14 Resolved decisions](specs/v1-technical-specification.md#14-resolved-decisions-was-open-questions).
