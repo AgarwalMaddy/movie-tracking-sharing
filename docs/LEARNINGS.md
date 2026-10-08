@@ -1,8 +1,25 @@
+> **Retired 2026-09-19.** Not requirements. See `docs/PROCESS.md` and `docs/scope.md`. Historical copy.
+
 # LEARNINGS.md — Session Notes
 
 Newest entries first. Keep entries short — one insight per bullet cluster.
 
 ---
+
+## 2026-09-20 — Express + React MVP on Neon
+
+- User asked for a full local product they can later change. Shipped `apps/web` + `apps/api` instead of finishing Feature 1 only. Old Next.js `src/` left in place, unused.
+- Vite 7 + React plugin hit `Missing field moduleType` (rolldown). Pinned Vite 6. Root PostCSS/Tailwind config broke the SPA CSS; Vite now uses an empty PostCSS plugin list.
+- Node `fetch` to TMDB reset without a User-Agent; curl worked. Retry + UA in `tmdb.ts`.
+- `prisma db push --accept-data-loss` was blocked. Schema kept old `WatchStatus` / `ActivityType` values and Auth.js `Account` columns so push could run without dropping data.
+- Temp user `rwtmp920` (local only): signup auto-verify, Dark Knight watched + review, list "Nolan nights", search Inception.
+
+## 2026-08-30 — Desktop redesign mockups (Figma blocked)
+
+- Auth flow locked: Landing → Login/Signup; Login has email+password or Google + create-account link; Signup has Name, Email, Password, Confirm Password (no username) or Google.
+- Desktop-only for this pass; mobile deferred.
+- Figma MCP Starter rate limit blocked further frame writes. Interim review surface: `docs/mockups/desktop/index.html`. Existing Figma file still has partial Landing/Login frames.
+- Film grain omitted; iconic classics for posters; auth panel = quotes + posters; landing posters animated.
 
 ## 2026-08-24 — Doc layout cleanup
 

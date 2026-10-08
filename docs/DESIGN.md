@@ -1,3 +1,5 @@
+> **Retired 2026-09-19.** Not requirements. See `docs/PROCESS.md` and `docs/scope.md`. Historical copy.
+
 # DESIGN.md — Decision log
 
 Product and UI/UX decisions. Newest first. Append only.

@@ -1,98 +1,59 @@
 # AGENTS.md — Movie Tracking & Sharing
 
-> Read this file at the start of every session. It is the single entry point for agents.
+> Read this file at the start of every session.
 
 ---
 
 ## Session start (in order)
 
 1. Read this file.
-2. Read `docs/LEARNINGS.md` (latest entry only unless the task needs history).
-3. Read the spec section that matches your task (see table below).
-4. If the task touches UI, read recent entries in `docs/DESIGN.md`.
-5. Confirm the task is in V1 scope. If not, stop and ask the user.
-
-| Task type | Read first |
-|-----------|------------|
-| Feature implementation | `docs/specs/v1-technical-specification.md` (relevant §) |
-| UI/UX work | `docs/DESIGN.md` + spec §9 |
-| Architecture / API change | Spec §5–§8 + update spec before coding |
-| Doc updates | `@maintain-project-docs` skill |
-| Bootstrap / setup | `docs/superpowers/plans/2026-08-23-v1-implementation.md` |
+2. Read `docs/PROCESS.md`.
+3. Read `docs/scope.md`.
+4. For a feature: ADR → HLD → LLD. The first cut of the app is already in `apps/`. Further changes should still go through that path unless the user asks to ship first.
+5. Do not use `docs/archive/` or the old V1 spec as requirements.
 
 ---
 
-## Project summary
+## Product
 
-Each user has a personal watch library and sends private suggestions to friends. V1 is manual tracking plus friend suggestions. OTT auto-sync is out of scope.
+Social TMDB-backed watch tracker. Public profiles, lists, reviews, activity, collections, and stats. Reference to beat: [AddToTheList](https://www.addtothelist.com/user/agarwalmadhur19/lists).
+
+Living scope: `docs/scope.md`.
 
 ---
 
-## Current status
+## Status
 
 | Item | State |
 |------|-------|
-| Spec | Approved — `docs/specs/v1-technical-specification.md` |
-| Implementation plan | Written — `docs/superpowers/plans/2026-08-23-v1-implementation.md` |
-| Application code | In progress on `feat/v1-implementation` |
-| Blocker | None for DB — Neon project `raspy-haze-49639619` migrated |
-
-**Do not expand V1 scope.** Implementation is underway on branch `feat/v1-implementation`.
-
----
-
-## V1 scope guard
-
-### In scope
-
-Auth, profiles, manual library (Watching / Watched / Want to Watch), TMDB search, friends, direct suggestions, chronological feed.
-
-### Out of scope (require explicit user approval)
-
-Groups, playlists, OTT auto-tracking, browser extension, recommendation algorithms, native apps, push notifications.
-
-### When unsure
-
-- Default: defer to spec §2.2 and ask the user.
-- Never add out-of-scope features "while you're here."
-- Record approved scope changes in spec §2 and append `docs/DESIGN.md`.
+| Process | Scope → ADR → HLD → LLD → implement → test / monitor / deploy |
+| Scope | Draft — `docs/scope.md` |
+| App | Working local MVP: `apps/web` (Vite React) + `apps/api` (Express) |
+| Auth | Email/password. Dev signup auto-verifies and opens a session. Google OAuth not wired |
+| Infra | Neon, GitHub, local `.env` / `.env.local`. API is Node; SPA can be static |
+| Leftover | Root `src/` is the old Next.js app. Ignore it |
 
 ---
 
-## Tech stack (locked)
+## Run locally
 
-| Layer | Choice |
-|-------|--------|
-| Framework | Next.js 15 App Router |
-| Language | TypeScript (strict) |
-| Database | PostgreSQL via **Neon** (Prisma) |
-| Auth | NextAuth.js v5 (email + Google) |
-| UI | Tailwind CSS + shadcn/ui |
-| Metadata | TMDB API v3 (server-side only) |
-| Validation | Zod |
-| Tests | Vitest, Playwright (mobile viewport) |
-| Hosting | Vercel |
+```
+npm install
+npx prisma generate
+npx prisma db push
+npm run dev
+```
+
+Web: `http://localhost:5173`. API: `http://localhost:4000`. Vite proxies `/api`.
 
 ---
 
-## Repository conventions
+## Conventions
 
-- **Mutations:** Server Actions. **TMDB proxy:** Route Handlers only.
-- **Colocation:** `src/features/{auth,library,friends,suggestions,feed}`
-- **Secrets:** Never expose `TMDB_API_KEY` or auth secrets to the client.
-- **Errors:** Return `{ error, code }` to the client. No stack traces.
-- **Commits:** Only when the user explicitly asks.
-
----
-
-## Domain terms
-
-| Term | Definition |
-|------|------------|
-| Library entry | One user's record for a title + watch status |
-| Suggestion | Private recommendation with a required message |
-| Title | Cached TMDB metadata (movie or TV) |
-| Friend | Mutual connection after an accepted request |
+- Secrets stay on the API (`TMDB_API_KEY`, `DATABASE_URL`, session secret).
+- Client errors: `{ error, code }`. No stack traces.
+- Routes live in `apps/api/src/routes.ts`. Domain helpers in `domain.ts`. UI pages in `apps/web/src/pages.tsx`.
+- Commits only when the user asks.
 
 ---
 
@@ -100,29 +61,15 @@ Groups, playlists, OTT auto-tracking, browser extension, recommendation algorith
 
 | File | Purpose |
 |------|---------|
-| `docs/specs/v1-technical-specification.md` | Canonical V1 spec |
-| `docs/superpowers/plans/2026-08-23-v1-implementation.md` | Task-by-task build plan |
-| `docs/superpowers/specs/2026-08-22-movie-tracking-v1-design.md` | Product design context |
-| `docs/DESIGN.md` | Decision log (append-only, newest first) |
-| `docs/LEARNINGS.md` | Session notes (local only, not synced to Notion) |
-| `docs/README.md` | Full doc index |
-| `docs/development.md` | Local setup (after scaffold) |
-| `docs/risk-register.md` | Risks and open decisions |
-| `docs/CHANGELOG.md` | Doc and release history |
-| `README.md` | Human-facing project overview |
-| [Notion Project Hub](https://app.notion.com/p/3c4f639a8a4d81d8bdc3e36effd3d48e) | Human mirror (summaries only) |
+| `docs/PROCESS.md` | How we work |
+| `docs/scope.md` | Product job, must / later / never |
+| `docs/adr/` | Per-feature ADRs |
+| `docs/hld/` `docs/lld/` | Design for the feature in flight |
+| `docs/development.md` | Local setup |
+| `docs/archive/` | Pre-2026-09-19 notes. Not requirements |
+| `README.md` | Human overview |
 
-**Source of truth:** Local repo. Sync summaries to Notion after material doc changes.
-
----
-
-## Session end checklist
-
-1. Update docs if you changed scope, architecture, or product decisions.
-2. Run `@humanize-docs` on any edited markdown.
-3. Prepend `docs/LEARNINGS.md` with session notes.
-4. Sync to Notion if spec, `AGENTS.md`, or `docs/DESIGN.md` changed materially (`@maintain-project-docs`).
-5. Add `docs/CHANGELOG.md` entry if doc structure changed.
+Local repo is source of truth. Notion hub: summaries only.
 
 ---
 
@@ -130,6 +77,5 @@ Groups, playlists, OTT auto-tracking, browser extension, recommendation algorith
 
 | Skill | When |
 |-------|------|
-| `@maintain-project-docs` | Creating or updating project docs; Notion sync |
-| `@humanize-docs` | Before finishing any markdown edit |
-| `writing-plans` | After spec approval, for new implementation plans |
+| `@maintain-project-docs` | Doc map, Notion sync |
+| `@humanize-docs` | Before finishing markdown edits |

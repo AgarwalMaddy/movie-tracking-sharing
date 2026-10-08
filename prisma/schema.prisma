@@ -1,8 +1,5 @@
 generator client {
   provider   = "prisma-client-js"
-  // Windows ARM64 has no native Prisma Node-API engines yet
-  // (prisma/prisma#15306). Binary engine runs as a sidecar so
-  // Windows can translate x64. Production (Vercel linux) ignores this.
   engineType = "binary"
 }
 
@@ -15,44 +12,46 @@ model User {
   id            String    @id @default(cuid())
   email         String    @unique
   emailVerified DateTime?
-  username      String    @unique
-  name          String
+  username      String?   @unique
+  name          String?
   image         String?
   bio           String?   @db.VarChar(160)
+  passwordHash  String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts            Account[]
-  sessions            Session[]
-  libraryEntries      LibraryEntry[]
-  sentRequests        FriendRequest[] @relation("SentRequests")
-  receivedRequests    FriendRequest[] @relation("ReceivedRequests")
-  friendships         Friendship[]    @relation("UserFriendships")
-  friendOf            Friendship[]    @relation("FriendOfUser")
-  sentSuggestions     Suggestion[]    @relation("SentSuggestions")
-  receivedSuggestions Suggestion[]    @relation("ReceivedSuggestions")
-  activityEvents      ActivityEvent[]
+  accounts         Account[]
+  sessions         Session[]
+  libraryEntries   LibraryEntry[]
+  watchLogs        WatchLog[]
+  lists            List[]
+  listItems        ListItem[]
+  reviews          Review[]
+  sentRequests     FriendRequest[] @relation("SentRequests")
+  receivedRequests FriendRequest[] @relation("ReceivedRequests")
+  friendships      Friendship[]    @relation("UserFriendships")
+  friendOf         Friendship[]    @relation("FriendOfUser")
+  sentSuggestions  Suggestion[]    @relation("SentSuggestions")
+  receivedSuggestions Suggestion[] @relation("ReceivedSuggestions")
+  activityEvents   ActivityEvent[]
+  notifications    Notification[]
 
-  @@index([username])
   @@index([email])
 }
 
 model Account {
   id                String  @id @default(cuid())
   userId            String
-  type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  access_token      String?
   expires_at        Int?
-  token_type        String?
-  scope             String?
   id_token          String? @db.Text
-  session_state     String?
-  password          String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refresh_token     String? @db.Text
+  scope             String?
+  token_type        String?
+  type              String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@index([userId])
@@ -76,19 +75,118 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model Title {
+  id          String    @id @default(cuid())
+  tmdbId      Int
+  mediaType   MediaType
+  title       String
+  posterPath  String?
+  backdropPath String?
+  imdbId      String?
+  releaseDate String?
+  overview    String?   @db.Text
+  runtime     Int?
+  cachedAt    DateTime  @default(now())
+
+  libraryEntries LibraryEntry[]
+  watchLogs      WatchLog[]
+  listItems      ListItem[]
+  reviews        Review[]
+  suggestions    Suggestion[]
+  collectionItems CollectionItem[]
+
+  @@unique([tmdbId, mediaType])
+}
+
+enum MediaType {
+  MOVIE
+  TV
+}
+
+model LibraryEntry {
+  id        String      @id @default(cuid())
+  userId    String
+  titleId   String
+  status    WatchStatus
+  note      String?     @db.VarChar(500)
+  rating    Int?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     Title       @relation(fields: [titleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, titleId])
+  @@index([userId, status])
+}
+
+enum WatchStatus {
+  WANT
+  WATCHING
+  WATCHED
+  WANT_TO_WATCH
+}
+
+model WatchLog {
+  id           String   @id @default(cuid())
+  userId       String
+  titleId      String
+  watchedAt    DateTime @default(now())
+  seasonNumber Int?
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title        Title    @relation(fields: [titleId], references: [id], onDelete: Cascade)
+
+  @@index([userId, watchedAt])
+}
+
+model List {
+  id          String     @id @default(cuid())
+  userId      String
+  slug        String
+  name        String
+  description String?    @db.VarChar(500)
+  createdAt   DateTime   @default(now())
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       ListItem[]
+
+  @@unique([userId, slug])
+}
+
+model ListItem {
+  id        String   @id @default(cuid())
+  listId    String
+  titleId   String
+  userId    String
+  addedAt   DateTime @default(now())
+  list      List     @relation(fields: [listId], references: [id], onDelete: Cascade)
+  title     Title    @relation(fields: [titleId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([listId, titleId])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  titleId   String
+  body      String   @db.VarChar(4000)
+  rating    Int?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     Title    @relation(fields: [titleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, titleId])
+}
+
 model FriendRequest {
   id          String              @id @default(cuid())
   requesterId String
   recipientId String
   status      FriendRequestStatus @default(PENDING)
   createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-
-  requester User @relation("SentRequests", fields: [requesterId], references: [id], onDelete: Cascade)
-  recipient User @relation("ReceivedRequests", fields: [recipientId], references: [id], onDelete: Cascade)
+  requester   User                @relation("SentRequests", fields: [requesterId], references: [id], onDelete: Cascade)
+  recipient   User                @relation("ReceivedRequests", fields: [recipientId], references: [id], onDelete: Cascade)
 
   @@unique([requesterId, recipientId])
-  @@index([recipientId, status])
 }
 
 enum FriendRequestStatus {
@@ -102,58 +200,10 @@ model Friendship {
   userId    String
   friendId  String
   createdAt DateTime @default(now())
-
-  user   User @relation("UserFriendships", fields: [userId], references: [id], onDelete: Cascade)
-  friend User @relation("FriendOfUser", fields: [friendId], references: [id], onDelete: Cascade)
+  user      User     @relation("UserFriendships", fields: [userId], references: [id], onDelete: Cascade)
+  friend    User     @relation("FriendOfUser", fields: [friendId], references: [id], onDelete: Cascade)
 
   @@unique([userId, friendId])
-  @@index([userId])
-  @@index([friendId])
-}
-
-model Title {
-  id          String    @id @default(cuid())
-  tmdbId      Int
-  mediaType   MediaType
-  title       String
-  posterPath  String?
-  releaseDate String?
-  overview    String?   @db.Text
-  cachedAt    DateTime  @default(now())
-
-  libraryEntries LibraryEntry[]
-  suggestions    Suggestion[]
-
-  @@unique([tmdbId, mediaType])
-  @@index([tmdbId])
-}
-
-enum MediaType {
-  MOVIE
-  TV
-}
-
-model LibraryEntry {
-  id           String      @id @default(cuid())
-  userId       String
-  titleId      String
-  status       WatchStatus
-  personalNote String?     @db.VarChar(500)
-  rating       Int?
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title Title @relation(fields: [titleId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, titleId])
-  @@index([userId, status])
-}
-
-enum WatchStatus {
-  WANT_TO_WATCH
-  WATCHING
-  WATCHED
 }
 
 model Suggestion {
@@ -164,14 +214,11 @@ model Suggestion {
   message     String           @db.VarChar(1000)
   status      SuggestionStatus @default(PENDING)
   createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-
-  sender    User  @relation("SentSuggestions", fields: [senderId], references: [id], onDelete: Cascade)
-  recipient User  @relation("ReceivedSuggestions", fields: [recipientId], references: [id], onDelete: Cascade)
-  title     Title @relation(fields: [titleId], references: [id], onDelete: Cascade)
+  sender      User             @relation("SentSuggestions", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient   User             @relation("ReceivedSuggestions", fields: [recipientId], references: [id], onDelete: Cascade)
+  title       Title            @relation(fields: [titleId], references: [id], onDelete: Cascade)
 
   @@index([recipientId, status])
-  @@index([senderId])
 }
 
 enum SuggestionStatus {
@@ -186,16 +233,51 @@ model ActivityEvent {
   type      ActivityType
   payload   Json
   createdAt DateTime     @default(now())
+  actor     User         @relation(fields: [actorId], references: [id], onDelete: Cascade)
 
-  actor User @relation(fields: [actorId], references: [id], onDelete: Cascade)
-
-  @@index([actorId, createdAt])
   @@index([createdAt])
 }
 
 enum ActivityType {
+  WATCHED
+  LIST_ADD
+  LIST_CREATE
+  REVIEW
+  RATED
+  FRIEND
+  RECOMMEND
   LIBRARY_ADD
   LIBRARY_STATUS_CHANGE
   SUGGESTION_SENT
   SUGGESTION_ACCEPTED
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  body      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+}
+
+model Collection {
+  id          String           @id @default(cuid())
+  slug        String           @unique
+  name        String
+  description String           @db.VarChar(500)
+  items       CollectionItem[]
+}
+
+model CollectionItem {
+  id           String     @id @default(cuid())
+  collectionId String
+  titleId      String
+  sortOrder    Int        @default(0)
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  title        Title      @relation(fields: [titleId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, titleId])
 }

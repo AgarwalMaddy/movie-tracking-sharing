@@ -1,7 +1,9 @@
+> **Retired 2026-09-19.** Not requirements. Do not implement from this spec. Canonical process: `docs/PROCESS.md`. Product: `docs/scope.md`.
+
 # V1 Technical Specification — Movie Tracking & Sharing
 
 **Version:** 1.0  
-**Status:** Approved  
+**Status:** Retired  
 **Last updated:** 2026-08-23
 
 ---

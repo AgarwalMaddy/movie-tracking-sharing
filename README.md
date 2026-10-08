@@ -1,39 +1,32 @@
 # Movie Tracking & Sharing
 
-Track what you watch. Send friends recommendations with a note about why they'd like it.
+Social TMDB watch tracker: log what you watch, make lists, review, and share with friends. Reference: [AddToTheList](https://www.addtothelist.com/user/agarwalmadhur19/lists).
 
-V1 covers manual tracking and friend suggestions. OTT sync comes later.
+## Run it
 
-## Where things stand
+```bash
+npm install
+npx prisma generate
+npx prisma db push
+npm run dev
+```
 
-| Item | State |
-|------|-------|
-| V1 spec | Draft — [read spec](docs/specs/v1-technical-specification.md) |
-| Build plan | Done — [implementation plan](docs/superpowers/plans/2026-08-23-v1-implementation.md) |
-| Code | Not started — waiting on spec approval |
+- App: [http://localhost:5173](http://localhost:5173)
+- API: [http://localhost:4000](http://localhost:4000) (`GET /health`)
 
-## V1 features
+Needs `DATABASE_URL` and `TMDB_API_KEY` in `.env` or `.env.local`. In development, signup verifies the email immediately so you can use a throwaway account.
 
-- Sign in with email or Google
-- Personal library: Watching, Watched, Want to Watch
-- Search titles via TMDB
-- Friend requests
-- Suggestions (message required)
-- Activity feed (newest first, no ranking)
+## Layout
 
-## Documentation
+| Path | What |
+|------|------|
+| `apps/web` | React SPA (Vite, React Router) |
+| `apps/api` | Express JSON API, Prisma, TMDB |
+| `prisma/schema.prisma` | Neon Postgres schema |
+| `src/` | Old Next.js app. Do not extend |
 
-| Doc | What it's for |
-|-----|---------------|
-| [docs/README.md](docs/README.md) | Full index |
-| [docs/DESIGN.md](docs/DESIGN.md) | Product and UI decisions |
-| [docs/development.md](docs/development.md) | Local setup (after scaffold) |
-| [docs/risk-register.md](docs/risk-register.md) | Open risks and decisions |
-| [docs/CHANGELOG.md](docs/CHANGELOG.md) | What changed and when |
-| [AGENTS.md](AGENTS.md) | AI agent onboarding |
+Screens: discover, search, title, library, lists, reviews, friends, inbox, activity, profile, stats, collections.
 
-Repo files are the source of truth. Summaries also live in the [Notion Project Hub](https://app.notion.com/p/3c4f639a8a4d81d8bdc3e36effd3d48e).
+## Docs
 
-## Stack
-
-Next.js 15, TypeScript, PostgreSQL, Prisma, NextAuth.js v5, Tailwind, shadcn/ui, TMDB API v3, Vercel.
+Work is still **scope → ADR → HLD → LLD** for new slices. Index: [docs/README.md](docs/README.md). Setup: [docs/development.md](docs/development.md).

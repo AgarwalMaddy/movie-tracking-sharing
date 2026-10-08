@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<!-- Retired 2026-09-19. Not a design source. See docs/scope.md. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Desktop Mockups — Movie Tracking & Sharing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #1a1a24;
+      --surface: #26262f;
+      --card: #2c2c36;
+      --fg: #f2f2f5;
+      --muted: #99999f;
+      --primary: #e0a835;
+      --primary-fg: #1f1a0a;
+      --border: #404047;
+      --input: #22222c;
+      --glass: rgba(38, 38, 47, 0.65);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      background: #0d0d12;
+      color: var(--fg);
+      min-height: 100vh;
+    }
+
+    .chrome {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 24px;
+      background: rgba(13, 13, 18, 0.92);
+      border-bottom: 1px solid #2a2a33;
+      backdrop-filter: blur(12px);
+    }
+    .chrome h1 {
+      font-family: Syne, sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      margin-right: auto;
+      letter-spacing: -0.02em;
+    }
+    .chrome button {
+      font: 500 13px/1 Inter, sans-serif;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .chrome button.active {
+      background: var(--primary);
+      color: var(--primary-fg);
+      border-color: var(--primary);
+    }
+    .chrome .note {
+      font-size: 12px;
+      color: var(--muted);
+      margin-left: 8px;
+    }
+
+    .stage {
+      display: flex;
+      justify-content: center;
+      padding: 32px 24px 64px;
+      overflow-x: auto;
+    }
+
+    .screen {
+      display: none;
+      width: 1440px;
+      height: 900px;
+      flex-shrink: 0;
+      background: linear-gradient(180deg, #1a1a24 0%, #22222c 100%);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.55);
+      position: relative;
+    }
+    .screen.active { display: block; }
+
+    /* —— Landing —— */
+    .nav {
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      background: var(--glass);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(64,64,71,0.5);
+    }
+    .logo {
+      font-family: Syne, sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: -0.02em;
+    }
+    .nav-actions { display: flex; gap: 16px; align-items: center; }
+    .link-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font: 500 16px Inter, sans-serif;
+      cursor: pointer;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+      border-radius: 10px;
+      font: 600 16px Inter, sans-serif;
+      cursor: pointer;
+      transition: transform 100ms ease;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary {
+      background: var(--primary);
+      color: var(--primary-fg);
+      height: 44px;
+      padding: 0 24px;
+    }
+    .btn-primary.lg {
+      height: 56px;
+      padding: 0 32px;
+      font-size: 18px;
+      border-radius: 12px;
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--fg);
+      border: 1px solid #666670;
+      height: 52px;
+      width: 100%;
+      border-radius: 10px;
+    }
+
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 56px 48px 0;
+      gap: 20px;
+    }
+    .hero h2 {
+      font-family: Syne, sans-serif;
+      font-weight: 800;
+      font-size: 64px;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+    .hero p {
+      max-width: 560px;
+      font-size: 20px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .posters {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+      perspective: 800px;
+    }
+    .poster {
+      width: 100px;
+      height: 150px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: linear-gradient(145deg, #3a3a48, #1e1e28);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+      display: flex;
+      align-items: flex-end;
+      padding: 10px;
+      font-size: 10px;
+      color: rgba(242,242,245,0.75);
+      font-weight: 500;
+      animation: floatPoster 6s ease-in-out infinite;
+    }
+    .poster:nth-child(1) { transform: rotate(-6deg); animation-delay: 0s; background: linear-gradient(160deg,#2a2118,#1a1510); }
+    .poster:nth-child(2) { transform: rotate(3deg); animation-delay: 0.4s; background: linear-gradient(160deg,#1a2430,#101820); }
+    .poster:nth-child(3) { transform: rotate(-2deg); animation-delay: 0.8s; background: linear-gradient(160deg,#2a2a2a,#141414); }
+    .poster:nth-child(4) { transform: rotate(5deg); animation-delay: 1.2s; background: linear-gradient(160deg,#301820,#180e12); }
+    .poster:nth-child(5) { transform: rotate(-4deg); animation-delay: 1.6s; background: linear-gradient(160deg,#182030,#0c1018); }
+    .poster:nth-child(6) { transform: rotate(2deg); animation-delay: 2s; background: linear-gradient(160deg,#203028,#101818); }
+
+    @keyframes floatPoster {
+      0%, 100% { translate: 0 0; }
+      50% { translate: 0 -8px; }
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      padding: 40px 120px 0;
+    }
+    .feature {
+      background: var(--glass);
+      border: 1px solid #3a3a42;
+      border-radius: 16px;
+      padding: 28px;
+      backdrop-filter: blur(16px);
+    }
+    .feature h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .feature p {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 28px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 14px;
+      color: #808088;
+    }
+
+    /* —— Auth split —— */
+    .auth {
+      display: grid;
+      grid-template-columns: 60% 40%;
+      height: 100%;
+    }
+    .auth-form-pane {
+      display: flex;
+      flex-direction: column;
+      padding: 32px 48px;
+      position: relative;
+    }
+    .back {
+      align-self: flex-start;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font: 500 14px Inter, sans-serif;
+      cursor: pointer;
+      margin-bottom: 48px;
+    }
+    .form-wrap {
+      width: 400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .form-wrap h2 {
+      font-family: Syne, sans-serif;
+      font-weight: 800;
+      font-size: 40px;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .field { display: flex; flex-direction: column; gap: 8px; }
+    .field label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #cccdd3;
+    }
+    .field input {
+      height: 48px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--input);
+      color: var(--fg);
+      padding: 0 16px;
+      font-size: 15px;
+      outline: none;
+    }
+    .field input::placeholder { color: #666670; }
+    .field input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(224,168,53,0.18);
+    }
+    .btn-block { width: 100%; height: 52px; }
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #808088;
+      font-size: 13px;
+    }
+    .divider::before, .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .google-icon {
+      width: 18px;
+      height: 18px;
+      display: inline-block;
+    }
+    .form-footer {
+      text-align: center;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .form-footer a {
+      color: var(--fg);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+    }
+
+    .auth-visual {
+      position: relative;
+      background:
+        radial-gradient(ellipse at 30% 40%, rgba(224,168,53,0.12), transparent 55%),
+        linear-gradient(160deg, #2a2a36, #16161e);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px;
+    }
+    .auth-visual::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(135deg, transparent 40%, rgba(0,0,0,0.55)),
+        repeating-linear-gradient(
+          -12deg,
+          transparent,
+          transparent 80px,
+          rgba(255,255,255,0.02) 80px,
+          rgba(255,255,255,0.02) 160px
+        );
+      pointer-events: none;
+    }
+    .quote {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 420px;
+    }
+    .quote blockquote {
+      font-family: Syne, sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+    .quote cite {
+      font-style: normal;
+      font-size: 16px;
+      color: #b0b0b8;
+    }
+    .poster-stack {
+      position: absolute;
+      inset: 0;
+      opacity: 0.22;
+      pointer-events: none;
+    }
+    .poster-stack span {
+      position: absolute;
+      width: 140px;
+      height: 210px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: #333;
+    }
+    .poster-stack span:nth-child(1) { top: 8%; left: 8%; transform: rotate(-12deg); background: #2a2118; }
+    .poster-stack span:nth-child(2) { top: 18%; right: 10%; transform: rotate(8deg); background: #1a2430; }
+    .poster-stack span:nth-child(3) { bottom: 12%; left: 18%; transform: rotate(4deg); background: #301820; }
+    .poster-stack span:nth-child(4) { bottom: 8%; right: 16%; transform: rotate(-6deg); background: #182030; }
+
+    .flow-hint {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 11px;
+      color: #808088;
+      background: rgba(0,0,0,0.35);
+      padding: 6px 10px;
+      border-radius: 999px;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+  <div class="chrome">
+    <h1>Desktop mockups · 1440×900</h1>
+    <button type="button" class="active" data-screen="landing">1. Landing</button>
+    <button type="button" data-screen="login">2. Login</button>
+    <button type="button" data-screen="signup">3. Signup</button>
+    <span class="note">Flow: Landing → Login / Signup · Source for Figma sync</span>
+  </div>
+
+  <div class="stage">
+    <!-- LANDING -->
+    <section id="landing" class="screen active" aria-label="Landing Desktop">
+      <span class="flow-hint">Entry · Get Started / Sign In</span>
+      <header class="nav">
+        <div class="logo">Movie Tracker</div>
+        <div class="nav-actions">
+          <button class="link-btn" type="button" onclick="show('login')">Sign In</button>
+          <button class="btn btn-primary" type="button" onclick="show('signup')">Get Started</button>
+        </div>
+      </header>
+
+      <div class="hero">
+        <h2>Your library.<br />Their suggestions.</h2>
+        <p>Track what you watch and share recommendations with the reason why.</p>
+        <button class="btn btn-primary lg" type="button" onclick="show('signup')">Get Started →</button>
+        <div class="posters" aria-hidden="true">
+          <div class="poster">The Godfather</div>
+          <div class="poster">Casablanca</div>
+          <div class="poster">Citizen Kane</div>
+          <div class="poster">Vertigo</div>
+          <div class="poster">2001</div>
+          <div class="poster">Singin' in the Rain</div>
+        </div>
+      </div>
+
+      <div class="features">
+        <article class="feature">
+          <h3>Track Everything</h3>
+          <p>Three simple statuses: Watching, Watched, Want to Watch. Add titles in seconds.</p>
+        </article>
+        <article class="feature">
+          <h3>Get Personal Recommendations</h3>
+          <p>Friends send suggestions with a note explaining why. No algorithms, just people.</p>
+        </article>
+        <article class="feature">
+          <h3>Stay in the Loop</h3>
+          <p>See what your friends are watching. Discover through their activity.</p>
+        </article>
+      </div>
+
+      <div class="footer">Privacy · Terms · GitHub</div>
+    </section>
+
+    <!-- LOGIN -->
+    <section id="login" class="screen" aria-label="Login Desktop">
+      <div class="auth">
+        <div class="auth-form-pane">
+          <button class="back" type="button" onclick="show('landing')">← Back</button>
+          <div class="form-wrap">
+            <h2>Welcome back</h2>
+
+            <div class="field">
+              <label for="login-email">Email</label>
+              <input id="login-email" type="email" placeholder="you@example.com" autocomplete="email" />
+            </div>
+            <div class="field">
+              <label for="login-password">Password</label>
+              <input id="login-password" type="password" placeholder="••••••••" autocomplete="current-password" />
+            </div>
+
+            <button class="btn btn-primary btn-block" type="button">Sign In</button>
+
+            <div class="divider">Or continue with</div>
+
+            <button class="btn btn-outline" type="button">
+              <svg class="google-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+              Continue with Google
+            </button>
+
+            <p class="form-footer">
+              Don't have an account?
+              <a onclick="show('signup')">Create an account</a>
+            </p>
+          </div>
+        </div>
+
+        <aside class="auth-visual">
+          <div class="poster-stack" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <div class="quote">
+            <blockquote>“The stuff that dreams are made of.”</blockquote>
+            <cite>The Maltese Falcon</cite>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- SIGNUP -->
+    <section id="signup" class="screen" aria-label="Signup Desktop">
+      <div class="auth">
+        <div class="auth-form-pane">
+          <button class="back" type="button" onclick="show('landing')">← Back</button>
+          <div class="form-wrap" style="gap:16px">
+            <h2>Create an account</h2>
+
+            <div class="field">
+              <label for="signup-name">Name</label>
+              <input id="signup-name" type="text" placeholder="Jane Doe" autocomplete="name" />
+            </div>
+            <div class="field">
+              <label for="signup-email">Email</label>
+              <input id="signup-email" type="email" placeholder="you@example.com" autocomplete="email" />
+            </div>
+            <div class="field">
+              <label for="signup-password">Password</label>
+              <input id="signup-password" type="password" placeholder="••••••••" autocomplete="new-password" />
+            </div>
+            <div class="field">
+              <label for="signup-confirm">Confirm Password</label>
+              <input id="signup-confirm" type="password" placeholder="••••••••" autocomplete="new-password" />
+            </div>
+
+            <button class="btn btn-primary btn-block" type="button">Create Account</button>
+
+            <div class="divider">Or continue with</div>
+
+            <button class="btn btn-outline" type="button">
+              <svg class="google-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+              Continue with Google
+            </button>
+
+            <p class="form-footer">
+              Already have an account?
+              <a onclick="show('login')">Sign in</a>
+            </p>
+          </div>
+        </div>
+
+        <aside class="auth-visual">
+          <div class="poster-stack" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <div class="quote">
+            <blockquote>“Here's looking at you, kid.”</blockquote>
+            <cite>Casablanca</cite>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    function show(id) {
+      document.querySelectorAll('.screen').forEach((el) => el.classList.toggle('active', el.id === id));
+      document.querySelectorAll('.chrome button[data-screen]').forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.screen === id);
+      });
+    }
+    document.querySelectorAll('.chrome button[data-screen]').forEach((btn) => {
+      btn.addEventListener('click', () => show(btn.dataset.screen));
+    });
+  </script>
+</body>
+</html>

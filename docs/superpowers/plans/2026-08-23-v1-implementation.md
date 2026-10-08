@@ -1,3 +1,5 @@
+> **Retired 2026-09-19.** Not a build plan. See `docs/PROCESS.md`.
+
 # V1 Implementation Plan — Movie Tracking & Sharing
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.

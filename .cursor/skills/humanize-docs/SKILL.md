@@ -1,7 +1,7 @@
 ---
 name: humanize-docs
 description: |
-  Humanizes project documentation (AGENTS.md, docs/DESIGN.md, docs/LEARNINGS.md, specs,
+  Humanizes project documentation (AGENTS.md, docs/PROCESS.md, docs/scope.md, ADRs,
   README) to remove AI writing patterns. Use when creating or editing markdown
   docs in this repo, before committing doc changes, or when prose sounds generic.
 ---

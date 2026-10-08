@@ -1,8 +1,10 @@
+> **Retired 2026-09-19.** Not requirements. See `docs/scope.md`.
+
 # Movie Tracking & Sharing — V1 design
 
 **Date:** 2026-08-22  
-**Status:** Approved for spec  
-**Canonical spec:** [`docs/specs/v1-technical-specification.md`](../../specs/v1-technical-specification.md)
+**Status:** Retired  
+**Canonical spec:** retired — [`docs/specs/v1-technical-specification.md`](../../specs/v1-technical-specification.md)
 
 ---
 

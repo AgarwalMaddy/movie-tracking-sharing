@@ -8,6 +8,31 @@ Format based on [Keep a Changelog](https://keepachangelog.com/). This repo is pr
 
 ### Changed
 
+- App is `apps/web` + `apps/api` (React Vite + Express). `docs/development.md` and `AGENTS.md` describe that stack. Feature 1 HLD/LLD marked implemented; Google OAuth still not built.
+
+### Changed
+
+- ADR 0001 amended: React (Vite) web + Express API so a later React Native app can share the API. Next.js HLD agreement void. New HLD/LLD drafts. No code until HLD is re-agreed and LLD accepted.
+
+### Changed
+
+- Reset documentation to Scope → ADR → HLD → LLD. Canonical files: `docs/PROCESS.md`, `docs/scope.md`, `docs/adr/`. Retired the V1 spec, DESIGN, LEARNINGS, implementation plan, redesign/mockups, and `PRODUCT.md` (banners; see `docs/archive/README.md`).
+- `AGENTS.md` and `README.md` no longer lock the old private-library V1 or the stack. Application `src/` is frozen until Feature 1 LLD.
+- `@maintain-project-docs` and `.cursor/rules/project-documentation.mdc` match the new map. No Figma in the workflow.
+
+### Added
+
+- `docs/adr/0001-auth-and-identity.md` — Proposed Feature 1 ADR
+- `docs/hld/` and `docs/lld/` placeholders (empty until ADR accepted)
+
+### Added
+
+- `docs/redesign-plan-2026-08-29.md` — cinematic dark theme redesign plan (landing + auth)
+- `docs/mockups/desktop/index.html` — desktop 1440×900 HTML mockups (Landing, Login, Signup) for review while Figma MCP is rate-limited
+- Doc index links for redesign plan and desktop mockups
+
+### Changed
+
 - Moved `DESIGN.md` and `LEARNINGS.md` into `docs/`; removed redundant `CLAUDE.md` alias
 - Updated doc index, agent rules, and skills to match new paths
 - `docs/DESIGN.md` — full-width header, mobile bottom nav, desktop 1440 Figma page

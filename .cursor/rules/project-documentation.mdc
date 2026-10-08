@@ -1,44 +1,40 @@
 ---
-description: Maintain AGENTS.md, docs/DESIGN.md, docs/LEARNINGS.md, and specs with Notion sync
+description: Maintain AGENTS.md, process, scope, and per-feature ADRs. Sync summaries to Notion.
 alwaysApply: true
 ---
 
-# Project Documentation Maintenance
+# Project documentation
 
-Read `AGENTS.md` at the start of every session on this repo.
+Read `AGENTS.md` at the start of every session.
 
-## Documentation files
+## Canonical files
 
 | File | Purpose |
 |------|---------|
-| `AGENTS.md` | Agent onboarding, stack, scope, workflow |
-| `docs/DESIGN.md` | UI/UX and product design decisions (append-only log) |
-| `docs/LEARNINGS.md` | Session learnings (newest first) |
-| `docs/specs/v1-technical-specification.md` | Canonical V1 spec |
-| `docs/README.md` | Documentation index |
+| `AGENTS.md` | Agent onboarding, status, process pointer |
+| `docs/PROCESS.md` | Scope → ADR → HLD → LLD → ship |
+| `docs/scope.md` | Product job, must / later / never |
+| `docs/adr/` | One ADR per feature |
+| `docs/hld/` | HLD for the feature in flight |
+| `docs/lld/` | LLD for the feature in flight |
+| `docs/README.md` | Index |
+| `docs/CHANGELOG.md` | Structural doc changes |
+| `README.md` | Human overview |
+
+Retired (not requirements): files listed in `docs/archive/README.md`, including the old V1 spec, DESIGN, LEARNINGS, and Figma/mockup plans.
 
 ## When to update
 
-- **Scope/architecture/API change** → update spec + `docs/DESIGN.md` decision log
-- **UI/UX decision** → append to `docs/DESIGN.md`
-- **Session end or significant discovery** → prepend entry to `docs/LEARNINGS.md`
-- **New doc file** → add to `docs/README.md`, `AGENTS.md` map, and `docs/CHANGELOG.md`
-- **Onboarding/stack change** → update `AGENTS.md` and `README.md`
-- **New risk or open decision** → add row to `docs/risk-register.md`
-- **Any markdown prose edit** → run `@humanize-docs` before finishing
+- **Product job / must-have change** → `docs/scope.md`
+- **How we build a feature** → that feature’s ADR, then HLD, then LLD. No whole-product ADR
+- **New doc file** → `docs/README.md`, `AGENTS.md` map, `docs/CHANGELOG.md`
+- **Onboarding / status** → `AGENTS.md` and `README.md`
+- **Any markdown prose edit** → `@humanize-docs`
 
-## Dual sync (local + Notion)
+## Dual sync
 
-Local filesystem is source of truth. After meaningful doc changes:
-1. Commit to git (when user requests)
-2. Sync summary to Notion Project Hub
+Local repo wins. After material doc changes, sync a summary to the Notion Project Hub (`@maintain-project-docs`). Commit only when the user asks.
 
-Use skill `@maintain-project-docs` for the full workflow.
+## Implementation gate
 
-## V1 scope guard
-
-Do not expand V1 scope (groups, auto-tracking, algorithms) without explicit user approval. Document deferred items in spec §2 only.
-
-## Spec-first development
-
-No feature implementation until V1 spec is approved. Reference spec section numbers in PR descriptions.
+No `src/` changes until the in-flight feature has an **Accepted** ADR, agreed HLD, and agreed LLD. Do not implement from `docs/archive/` or from the retired V1 spec.

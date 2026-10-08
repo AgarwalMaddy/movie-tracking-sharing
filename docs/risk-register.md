@@ -1,3 +1,5 @@
+> **Retired 2026-09-19.** Not the active risk register. Open questions now live in `docs/scope.md` and feature ADRs.
+
 # Risk register
 
 Lightweight tracker for V1 risks and open decisions. Review when scope or architecture changes.
