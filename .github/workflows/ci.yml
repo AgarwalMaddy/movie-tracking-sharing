@@ -21,7 +21,7 @@ jobs:
     outputs:
       sha: ${{ steps.sha.outputs.sha }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref || github.sha }}
           fetch-depth: 2
@@ -65,7 +65,7 @@ jobs:
       run:
         working-directory: apps/web
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           ref: ${{ needs.prettier.outputs.sha }}
       - uses: actions/setup-node@v5
@@ -89,7 +89,7 @@ jobs:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       SKIP_ENV_VALIDATION: "1"
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           ref: ${{ needs.prettier.outputs.sha }}
       - uses: actions/setup-node@v5
