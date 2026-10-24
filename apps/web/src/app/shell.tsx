@@ -1,12 +1,13 @@
-import { type FormEvent, type ReactNode, useEffect, useState } from 'react';
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth';
+import { SearchPalette } from '@/features/search';
 import { prefetch } from '@/lib/api';
 
 const NAV_PREFETCH: Record<string, string[]> = {
   '/discover': ['/discover', '/discover/meta'],
-  '/lists': [],
+  '/lists': ['/lists'],
   '/activity': ['/activity'],
   '/collections': ['/collections'],
   '/library': ['/me/library?status=WATCHED'],
@@ -33,6 +34,7 @@ function PrefetchLink({
     <NavLink
       to={to}
       className={className}
+      viewTransition
       onClick={onClick}
       onMouseEnter={() => {
         for (const p of paths) {
@@ -47,11 +49,11 @@ function PrefetchLink({
 
 export function Shell({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const nav = useNavigate();
   const loc = useLocation();
   const [morePath, setMorePath] = useState<string | null>(null);
-  const [q, setQ] = useState('');
+  const [palette, setPalette] = useState(false);
   const more = morePath === loc.pathname;
+  const closePalette = useCallback(() => setPalette(false), []);
 
   useEffect(() => {
     prefetch('/discover');
@@ -59,25 +61,25 @@ export function Shell({ children }: { children: ReactNode }) {
     prefetch('/collections');
   }, []);
 
-  function goSearch(e: FormEvent) {
-    e.preventDefault();
-    const query = q.trim();
-
-    if (query.length < 2) {
-      void nav('/search');
-
-      return;
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setPalette((open) => !open);
+      }
     }
 
-    void nav(`/search?q=${encodeURIComponent(query)}`);
-  }
+    window.addEventListener('keydown', onKey);
+
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   const youHref = user ? `/u/${user.username}` : '/login';
 
   return (
     <div className="shell">
       <header className="top">
-        <NavLink to={user ? '/discover' : '/'} className="brand">
+        <NavLink to={user ? '/discover' : '/'} className="brand" viewTransition>
           Reelwright
         </NavLink>
         <nav className="nav">
@@ -86,17 +88,15 @@ export function Shell({ children }: { children: ReactNode }) {
           <PrefetchLink to="/activity">Activity</PrefetchLink>
           <PrefetchLink to="/collections">Collections</PrefetchLink>
         </nav>
-        <form className="header-search" onSubmit={goSearch}>
-          <label className="sr-only" htmlFor="header-search">
-            Search titles
-          </label>
-          <input
-            id="header-search"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search titles"
-          />
-        </form>
+        <button
+          type="button"
+          className="header-search"
+          aria-haspopup="dialog"
+          onClick={() => setPalette(true)}
+        >
+          Search
+          <kbd>Ctrl K</kbd>
+        </button>
         <div className="spacer" />
         <button
           className="text-btn"
@@ -106,31 +106,34 @@ export function Shell({ children }: { children: ReactNode }) {
           More
         </button>
         {user ? (
-          <NavLink to={`/u/${user.username}`} className="avatar">
+          <NavLink to={`/u/${user.username}`} className="avatar" viewTransition>
             @{user.username}
           </NavLink>
         ) : (
-          <NavLink to="/login">Sign in</NavLink>
+          <NavLink to="/login" viewTransition>
+            Sign in
+          </NavLink>
         )}
         {more ? (
           <div className="more-panel">
-            <PrefetchLink to="/library" onClick={() => setMorePath(null)}>
-              Library
-            </PrefetchLink>
+            {user ? (
+              <>
+                <PrefetchLink to="/library" onClick={() => setMorePath(null)}>
+                  Library
+                </PrefetchLink>
+                <PrefetchLink to="/friends" onClick={() => setMorePath(null)}>
+                  Friends
+                </PrefetchLink>
+                <PrefetchLink to="/inbox" onClick={() => setMorePath(null)}>
+                  Inbox
+                </PrefetchLink>
+                <PrefetchLink to="/history" onClick={() => setMorePath(null)}>
+                  Watch log
+                </PrefetchLink>
+              </>
+            ) : null}
             <PrefetchLink to="/reviews" onClick={() => setMorePath(null)}>
               Reviews
-            </PrefetchLink>
-            <PrefetchLink to="/friends" onClick={() => setMorePath(null)}>
-              Friends
-            </PrefetchLink>
-            <PrefetchLink to="/inbox" onClick={() => setMorePath(null)}>
-              Inbox
-            </PrefetchLink>
-            <PrefetchLink to="/history" onClick={() => setMorePath(null)}>
-              Watch log
-            </PrefetchLink>
-            <PrefetchLink to="/search" onClick={() => setMorePath(null)}>
-              Search
             </PrefetchLink>
           </div>
         ) : null}
@@ -148,16 +151,25 @@ export function Shell({ children }: { children: ReactNode }) {
           <p>Public profiles, lists, and a watch log. Title data from TMDB.</p>
         </div>
         <nav>
-          <Link to="/discover">Discover</Link>
-          <Link to="/search">Search</Link>
-          <Link to="/lists">Lists</Link>
-          <Link to="/collections">Collections</Link>
+          <Link to="/discover" viewTransition>
+            Discover
+          </Link>
+          <Link to="/search" viewTransition>
+            Search
+          </Link>
+          <Link to="/lists" viewTransition>
+            Lists
+          </Link>
+          <Link to="/collections" viewTransition>
+            Collections
+          </Link>
         </nav>
         <p className="attr">
           This product uses the TMDB API but is not endorsed or certified by
           TMDB.
         </p>
       </footer>
+      <SearchPalette open={palette} onClose={closePalette} />
     </div>
   );
 }

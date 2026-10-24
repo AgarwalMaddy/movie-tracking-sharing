@@ -7,6 +7,10 @@ export async function findUserByEmail(email: string) {
   return db.user.findUnique({ where: { email } });
 }
 
+export async function findUserByUsername(username: string) {
+  return db.user.findUnique({ where: { username } });
+}
+
 export async function findUserById(id: string) {
   return db.user.findUnique({ where: { id } });
 }
@@ -24,10 +28,33 @@ export async function createUser(data: {
   name: string;
   email: string;
   username: string;
-  passwordHash: string;
+  passwordHash?: string | null;
   emailVerified: Date | null;
+  image?: string | null;
 }) {
   return db.user.create({ data });
+}
+
+export async function findAccount(provider: string, providerAccountId: string) {
+  return db.account.findUnique({
+    where: { provider_providerAccountId: { provider, providerAccountId } },
+    include: { user: true },
+  });
+}
+
+export async function linkAccount(
+  userId: string,
+  provider: string,
+  providerAccountId: string,
+) {
+  return db.account.create({
+    data: {
+      userId,
+      provider,
+      providerAccountId,
+      type: 'oauth',
+    },
+  });
 }
 
 export async function createSession(userId: string) {

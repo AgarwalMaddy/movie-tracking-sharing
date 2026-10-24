@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { PosterGrid, Presence, Rail as PosterRail } from '@/features/titles';
 import {
@@ -40,8 +41,9 @@ const LANG_FALLBACK: Language[] = [
   { code: 'de', name: 'German' },
 ];
 
-type FilterCat =
-  'year' | 'genre' | 'actor' | 'actress' | 'director' | 'language';
+type FilterCat = 'year' | 'genre' | 'cast' | 'director' | 'language';
+type Kind = 'all' | 'movie' | 'tv';
+type Sort = 'trending' | 'soon' | 'top';
 
 type DiscoverPayload = {
   rails: Rail[];
@@ -49,22 +51,42 @@ type DiscoverPayload = {
   stale?: boolean;
 };
 
+function readKind(value: string | null): Kind {
+  return value === 'movie' || value === 'tv' ? value : 'all';
+}
+
+function readSort(value: string | null): Sort {
+  return value === 'soon' || value === 'top' ? value : 'trending';
+}
+
+function readPerson(params: URLSearchParams): Person | null {
+  const id = Number(params.get('person'));
+  const name = params.get('name');
+
+  if (!Number.isFinite(id) || id <= 0 || !name) {
+    return null;
+  }
+
+  return { id, name, image: null };
+}
+
 export function Discover() {
+  const [params, setParams] = useSearchParams();
   const cached = peekAny<DiscoverPayload>('/discover');
   const [rails, setRails] = useState<Rail[]>(() => cached?.rails ?? []);
   const [featured, setFeatured] = useState<Featured | null>(
     () => cached?.featured ?? null,
   );
   const [stale, setStale] = useState(Boolean(cached?.stale));
-  const [kind, setKind] = useState<'all' | 'movie' | 'tv'>('all');
-  const [sort, setSort] = useState('trending');
+  const kind = readKind(params.get('type'));
+  const sort = readSort(params.get('sort'));
+  const year = params.get('year') ?? '';
+  const genre = params.get('genre') ?? '';
+  const language = params.get('language') ?? '';
+  const person = readPerson(params);
+  const credit = params.get('credit') === 'crew' ? 'crew' : 'cast';
   const [err, setErr] = useState('');
   const [open, setOpen] = useState<FilterCat | null>(null);
-  const [year, setYear] = useState('');
-  const [genre, setGenre] = useState('');
-  const [language, setLanguage] = useState('');
-  const [person, setPerson] = useState<Person | null>(null);
-  const [credit, setCredit] = useState<'cast' | 'crew'>('cast');
   const [genres, setGenres] = useState<Genre[]>(
     () => peek<{ genres: Genre[] }>('/discover/meta')?.genres ?? [],
   );
@@ -77,6 +99,20 @@ export function Discover() {
   const [people, setPeople] = useState<Person[]>([]);
   const [browse, setBrowse] = useState<Title[]>([]);
   const filtering = Boolean(year || genre || language || person);
+
+  function write(patch: Record<string, string | null>) {
+    const next = new URLSearchParams(params);
+
+    for (const [key, value] of Object.entries(patch)) {
+      if (value) {
+        next.set(key, value);
+      } else {
+        next.delete(key);
+      }
+    }
+
+    setParams(next, { replace: true });
+  }
 
   useEffect(() => {
     void api<DiscoverPayload>('/discover')
@@ -129,7 +165,7 @@ export function Discover() {
       qs.set('language', language);
     }
 
-    if (person) {
+    if (person?.id) {
       qs.set('person', String(person.id));
       qs.set('credit', credit);
     }
@@ -144,10 +180,10 @@ export function Discover() {
     )
       .then((rows) => setBrowse(rows.flatMap((r) => r.titles)))
       .catch((e: unknown) => setErr(errMessage(e)));
-  }, [filtering, year, genre, language, person, credit, kind]);
+  }, [filtering, year, genre, language, person?.id, credit, kind]);
 
   useEffect(() => {
-    if (open !== 'actor' && open !== 'actress' && open !== 'director') {
+    if (open !== 'cast' && open !== 'director') {
       return;
     }
 
@@ -184,21 +220,17 @@ export function Discover() {
 
   function pickCat(cat: FilterCat) {
     setOpen((cur) => (cur === cat ? null : cat));
-
-    if (cat === 'director') {
-      setCredit('crew');
-    }
-
-    if (cat === 'actor' || cat === 'actress') {
-      setCredit('cast');
-    }
   }
 
   function clearFilters() {
-    setYear('');
-    setGenre('');
-    setLanguage('');
-    setPerson(null);
+    write({
+      year: null,
+      genre: null,
+      language: null,
+      person: null,
+      name: null,
+      credit: null,
+    });
     setPeopleQ('');
     setPeople([]);
     setOpen(null);
@@ -223,7 +255,7 @@ export function Discover() {
             key={k}
             className="chip"
             aria-pressed={kind === k}
-            onClick={() => setKind(k)}
+            onClick={() => write({ type: k === 'all' ? null : k })}
           >
             {k === 'all' ? 'All' : k === 'movie' ? 'Movies' : 'Series'}
           </button>
@@ -235,8 +267,7 @@ export function Discover() {
           [
             ['year', 'Year'],
             ['genre', 'Genre'],
-            ['actor', 'Actor'],
-            ['actress', 'Actress'],
+            ['cast', 'Cast'],
             ['director', 'Director'],
             ['language', 'Language'],
           ] as const
@@ -263,7 +294,7 @@ export function Discover() {
               key={y}
               className="chip"
               aria-pressed={year === y}
-              onClick={() => setYear(year === y ? '' : y)}
+              onClick={() => write({ year: year === y ? null : y })}
             >
               {y}
             </button>
@@ -278,7 +309,9 @@ export function Discover() {
               className="chip"
               aria-pressed={genre === String(g.id)}
               onClick={() =>
-                setGenre(genre === String(g.id) ? '' : String(g.id))
+                write({
+                  genre: genre === String(g.id) ? null : String(g.id),
+                })
               }
             >
               {g.name}
@@ -293,27 +326,31 @@ export function Discover() {
               key={l.code}
               className="chip"
               aria-pressed={language === l.code}
-              onClick={() => setLanguage(language === l.code ? '' : l.code)}
+              onClick={() =>
+                write({ language: language === l.code ? null : l.code })
+              }
             >
               {l.name}
             </button>
           ))}
         </div>
       ) : null}
-      {open === 'actor' || open === 'actress' || open === 'director' ? (
+      {open === 'cast' || open === 'director' ? (
         <div className="page-inner person-filter">
           <input
             className="search"
             value={peopleQ}
             onChange={(e) => setPeopleQ(e.target.value)}
-            placeholder={`Search ${open}`}
+            placeholder={open === 'cast' ? 'Search cast' : 'Search director'}
           />
           <div className="chips" style={{ padding: 0 }}>
             {person ? (
               <button
                 className="chip"
                 aria-pressed
-                onClick={() => setPerson(null)}
+                onClick={() =>
+                  write({ person: null, name: null, credit: null })
+                }
               >
                 {person.name}
               </button>
@@ -323,7 +360,13 @@ export function Discover() {
                 key={p.id}
                 className="chip"
                 aria-pressed={person?.id === p.id}
-                onClick={() => setPerson(p)}
+                onClick={() =>
+                  write({
+                    person: String(p.id),
+                    name: p.name,
+                    credit: open === 'director' ? 'crew' : 'cast',
+                  })
+                }
               >
                 {p.name}
               </button>
@@ -342,7 +385,7 @@ export function Discover() {
               key={id}
               className="chip"
               aria-pressed={sort === id}
-              onClick={() => setSort(id)}
+              onClick={() => write({ sort: id === 'trending' ? null : id })}
             >
               {label}
             </button>

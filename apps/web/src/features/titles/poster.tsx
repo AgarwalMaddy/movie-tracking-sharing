@@ -1,27 +1,37 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { prefetch, type Title } from '@/lib/api';
 
 export function Poster({ title }: { title: Title }) {
   const href = `/title/${title.mediaType}/${title.tmdbId}`;
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+  const showImg = Boolean(title.posterUrl) && title.posterUrl !== failedUrl;
 
   return (
     <div className="poster-card">
       <Link
         className="poster"
         to={href}
+        viewTransition
         onMouseEnter={() =>
           prefetch(`/titles/${title.mediaType}/${title.tmdbId}`)
         }
       >
-        {title.posterUrl ? (
-          <img src={title.posterUrl} alt="" />
+        {showImg ? (
+          <img
+            src={title.posterUrl ?? ''}
+            alt=""
+            onError={() => setFailedUrl(title.posterUrl)}
+          />
         ) : (
           <div className="ph">{title.title}</div>
         )}
       </Link>
       <p className="cap">
-        <Link to={href}>{title.title}</Link>
+        <Link to={href} viewTransition>
+          {title.title}
+        </Link>
         {title.releaseDate ? (
           <span className="year"> {title.releaseDate.slice(0, 4)}</span>
         ) : null}

@@ -11,6 +11,7 @@ import {
   toClientCast,
   toClientTitle,
   watchProviders,
+  type CreditSearchRole,
   type MediaType,
 } from '#integrations/tmdb.js';
 import { toPublicUser } from '#utils/to-public-user.js';
@@ -187,8 +188,50 @@ async function loadRail(def: (typeof DISCOVER_RAILS)[number]): Promise<{
   }
 }
 
+function dedupeRailTitles<
+  R extends { titles: { mediaType: string; tmdbId: number }[] },
+>(rails: R[]): R[] {
+  const seen = new Set<string>();
+
+  return rails.map((rail) => ({
+    ...rail,
+    titles: rail.titles.filter((t) => {
+      const key = `${t.mediaType}:${String(t.tmdbId)}`;
+
+      if (seen.has(key)) {
+        return false;
+      }
+
+      seen.add(key);
+
+      return true;
+    }),
+  }));
+}
+
+function dropUnreleased<
+  R extends { id: string; titles: { releaseDate?: string | null }[] },
+>(rails: R[]): R[] {
+  const today = new Date().toISOString().slice(0, 10);
+
+  return rails.map((rail) => {
+    if (rail.id !== 'trending') {
+      return rail;
+    }
+
+    return {
+      ...rail,
+      titles: rail.titles.filter(
+        (t) => !t.releaseDate || t.releaseDate.slice(0, 10) <= today,
+      ),
+    };
+  });
+}
+
 export async function discoverRails() {
-  const rails = await Promise.all(DISCOVER_RAILS.map(loadRail));
+  const rails = dedupeRailTitles(
+    dropUnreleased(await Promise.all(DISCOVER_RAILS.map(loadRail))),
+  );
   const hasTitles = rails.some((r) => r.titles.length);
   const stale = rails.some((r) => r.stale);
 
@@ -211,12 +254,16 @@ export async function discoverRails() {
         title: storedToClient(headTitle),
         cast: FALLBACK_CAST.map(toClientCast),
       },
-      rails: packed.map((rail) => ({
-        id: rail.id,
-        label: rail.label,
-        kind: rail.kind,
-        titles: rail.titles.map(storedToClient),
-      })),
+      rails: dedupeRailTitles(
+        dropUnreleased(
+          packed.map((rail) => ({
+            id: rail.id,
+            label: rail.label,
+            kind: rail.kind,
+            titles: rail.titles.map(storedToClient),
+          })),
+        ),
+      ),
     };
   }
 
@@ -261,10 +308,7 @@ export async function discoverMeta() {
   }
 }
 
-export async function discoverPeople(
-  query: string,
-  role: 'actor' | 'actress' | 'director',
-) {
+export async function discoverPeople(query: string, role: CreditSearchRole) {
   if (query.length < 2) {
     return [];
   }

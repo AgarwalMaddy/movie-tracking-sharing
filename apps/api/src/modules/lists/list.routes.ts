@@ -7,6 +7,7 @@ import * as listController from './list.controller.js';
 const router = Router();
 
 router.post('/', requireAuth, listController.create);
+router.get('/', listController.browse);
 router.post('/:id/items', requireAuth, listController.addItem);
 router.get('/:username/:slug', listController.showBySlug);
 

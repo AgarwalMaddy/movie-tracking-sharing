@@ -24,14 +24,14 @@ Living scope: `docs/scope.md`.
 
 ## Status
 
-| Item | State |
-|------|-------|
-| Process | Scope → ADR → HLD → LLD → implement → test / monitor / deploy |
-| Scope | Draft — `docs/scope.md` |
-| App | Vite SPA + Express API. Catalog rails persist in Postgres. TMDB uses public DNS; bundled rails if both live TMDB and snapshots miss |
-| Auth | Email/password. Dev signup auto-verifies and opens a session. Google OAuth not wired |
-| Infra | Neon, GitHub. `render.yaml` for one free Node service (API serves `apps/web/dist`). Vercel Git deploys are off |
-| Security | Helmet, auth rate limit, Dependabot alerts, CI npm audit. CodeQL is not on the free private-repo plan |
+| Item     | State                                                                                                                               |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Process  | Scope → ADR → HLD → LLD → implement → test / monitor / deploy                                                                       |
+| Scope    | Draft — `docs/scope.md`                                                                                                             |
+| App      | Vite SPA + Express API. Catalog rails persist in Postgres. TMDB uses public DNS; bundled rails if both live TMDB and snapshots miss |
+| Auth     | Email/password, Google (when `GOOGLE_CLIENT_*` are set), demo via `POST /auth/demo`. Dev signup auto-verifies                       |
+| Infra    | Neon, GitHub. `render.yaml` for one free Node service (API serves `apps/web/dist`). Vercel Git deploys are off                      |
+| Security | Helmet, auth rate limit, Dependabot alerts, CI npm audit. CodeQL is not on the free private-repo plan                               |
 
 ---
 
@@ -63,17 +63,17 @@ Lint and format (same idea as TravelTogether): `npm run lint`, `npm run lint:fix
 
 ## Documentation map
 
-| File | Purpose |
-|------|---------|
-| `docs/PROCESS.md` | How we work |
-| `docs/scope.md` | Product job, must / later / never |
-| `docs/adr/` | Per-feature ADRs |
-| `docs/hld/` `docs/lld/` | Design for the feature in flight |
-| `docs/development.md` | Local setup |
-| `apps/api/AGENTS.md` | API layers, imports, errors |
-| `apps/web/AGENTS.md` | Web folders and import direction |
-| `docs/archive/` | Pre-2026-09-19 notes. Not requirements |
-| `README.md` | Human overview |
+| File                    | Purpose                                |
+| ----------------------- | -------------------------------------- |
+| `docs/PROCESS.md`       | How we work                            |
+| `docs/scope.md`         | Product job, must / later / never      |
+| `docs/adr/`             | Per-feature ADRs                       |
+| `docs/hld/` `docs/lld/` | Design for the feature in flight       |
+| `docs/development.md`   | Local setup                            |
+| `apps/api/AGENTS.md`    | API layers, imports, errors            |
+| `apps/web/AGENTS.md`    | Web folders and import direction       |
+| `docs/archive/`         | Pre-2026-09-19 notes. Not requirements |
+| `README.md`             | Human overview                         |
 
 Local repo is source of truth. Notion hub: summaries only.
 
@@ -81,7 +81,7 @@ Local repo is source of truth. Notion hub: summaries only.
 
 ## Skills
 
-| Skill | When |
-|-------|------|
-| `@maintain-project-docs` | Doc map, Notion sync |
-| `@humanize-docs` | Before finishing markdown edits |
+| Skill                    | When                            |
+| ------------------------ | ------------------------------- |
+| `@maintain-project-docs` | Doc map, Notion sync            |
+| `@humanize-docs`         | Before finishing markdown edits |

@@ -28,12 +28,16 @@ export function Activity() {
     <main className="page">
       <h1>Activity</h1>
       <div className="feed">
-        {events.map((e) => (
-          <article key={e.id}>
-            <Link to={`/u/${e.actor.username}`}>@{e.actor.username}</Link>{' '}
-            {e.type.toLowerCase()} {e.payload.title ?? e.payload.name ?? ''}
-          </article>
-        ))}
+        {events.length ? (
+          events.map((e) => (
+            <article key={e.id}>
+              <Link to={`/u/${e.actor.username}`}>@{e.actor.username}</Link>{' '}
+              {e.type.toLowerCase()} {e.payload.title ?? e.payload.name ?? ''}
+            </article>
+          ))
+        ) : (
+          <p className="muted">Nothing logged yet.</p>
+        )}
       </div>
     </main>
   );

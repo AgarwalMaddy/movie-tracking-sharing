@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 
-import { useAuth } from '@/features/auth';
-import { Presence } from '@/features/titles';
+import { AuthExtras, useAuth } from '@/features/auth';
+import { Presence, Rail as PosterRail } from '@/features/titles';
 import { api, peekAny, type Featured, type Rail } from '@/lib/api';
 
 type DiscoverPayload = {
@@ -16,15 +16,23 @@ export function Landing() {
   const [featured, setFeatured] = useState<Featured | null>(
     () => cached?.featured ?? null,
   );
+  const [rails, setRails] = useState<Rail[]>(() => cached?.rails ?? []);
 
   useEffect(() => {
     void api<DiscoverPayload>('/discover')
-      .then((d) => setFeatured(d.featured ?? null))
+      .then((d) => {
+        setFeatured(d.featured ?? null);
+        setRails(d.rails);
+      })
       .catch(() => {
         const fallback = peekAny<DiscoverPayload>('/discover');
 
         if (fallback?.featured) {
           setFeatured(fallback.featured);
+        }
+
+        if (fallback?.rails.length) {
+          setRails(fallback.rails);
         }
       });
   }, []);
@@ -41,12 +49,13 @@ export function Landing() {
           cast={featured.cast}
           actions={
             <>
-              <Link className="btn" to="/signup">
+              <Link className="btn" to="/signup" viewTransition>
                 Create account
               </Link>
-              <Link className="btn ghost" to="/login">
+              <Link className="btn ghost" to="/login" viewTransition>
                 Sign in
               </Link>
+              <AuthExtras next="/discover" />
             </>
           }
         />
@@ -59,15 +68,33 @@ export function Landing() {
             Public profiles, lists, reviews, and a watch log. TMDB for titles.
           </p>
           <div className="row">
-            <Link className="btn" to="/signup">
+            <Link className="btn" to="/signup" viewTransition>
               Create account
             </Link>
-            <Link className="btn ghost" to="/login">
+            <Link className="btn ghost" to="/login" viewTransition>
               Sign in
             </Link>
+            <AuthExtras next="/discover" />
           </div>
         </div>
       )}
+      <section className="home-points" aria-label="How it works">
+        <div>
+          <h2>Log it</h2>
+          <p>Watched, watching, or want. Ratings live on the title.</p>
+        </div>
+        <div>
+          <h2>List it</h2>
+          <p>Public lists anyone can open from your profile.</p>
+        </div>
+        <div>
+          <h2>Share the log</h2>
+          <p>Profiles, reviews, and activity are public by default.</p>
+        </div>
+      </section>
+      {rails.map((r) => (
+        <PosterRail key={r.id} label={r.label} titles={r.titles} />
+      ))}
     </main>
   );
 }

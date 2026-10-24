@@ -3,13 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { type CastMember, type Title } from '@/lib/api';
 
-function blurb(text: string | null | undefined) {
-  if (!text) {
-    return '';
-  }
-
-  return text.split(/\s+/).slice(0, 20).join(' ');
-}
+import { CastStrip } from './cast';
 
 export function Presence({
   title,
@@ -23,32 +17,21 @@ export function Presence({
   actions?: ReactNode;
 }) {
   const href = `/title/${title.mediaType}/${title.tmdbId}`;
-  const faces = cast.filter((c) => c.imageUrl).slice(0, 5);
-  const line = blurb(title.overview);
 
   return (
     <section className="presence">
       {title.backdropUrl ? (
         <img className="presence-back" src={title.backdropUrl} alt="" />
       ) : null}
-      {faces.length ? (
-        <div className="presence-cast" aria-hidden="true">
-          {faces.map((c, i) => (
-            <img
-              key={c.id}
-              src={c.imageUrl ?? ''}
-              alt=""
-              style={{ zIndex: faces.length - i }}
-            />
-          ))}
-        </div>
-      ) : null}
       <div className="presence-copy">
         {eyebrow ? <p className="presence-eye">{eyebrow}</p> : null}
         <h1>
-          <Link to={href}>{title.title}</Link>
+          <Link to={href} viewTransition>
+            {title.title}
+          </Link>
         </h1>
-        {line ? <p className="lede">{line}</p> : null}
+        {title.overview ? <p className="lede">{title.overview}</p> : null}
+        <CastStrip cast={cast} compact />
         <div className="row">
           {actions ?? (
             <Link className="btn" to={href}>

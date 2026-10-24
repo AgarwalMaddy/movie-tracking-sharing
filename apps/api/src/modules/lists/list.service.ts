@@ -80,6 +80,22 @@ export async function getListByUsernameSlug(username: string, slug: string) {
   };
 }
 
+export async function browsePublicLists(q = '') {
+  const lists = await listRepository.findRecent(q);
+
+  return lists
+    .filter((l) => l.user.username)
+    .map((l) => ({
+      id: l.id,
+      name: l.name,
+      slug: l.slug,
+      description: l.description,
+      itemCount: l._count.items,
+      posters: l.items.map((i) => publicTitle(i.title).posterUrl),
+      user: toPublicUser(l.user),
+    }));
+}
+
 export async function listsForUsername(username: string) {
   const user = await findUserByUsername(username);
 

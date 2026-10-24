@@ -7,7 +7,7 @@ import * as activityService from './activity.service.js';
 export const feed: RequestHandler = async (req, res, next) => {
   try {
     const events = await activityService.getFeed(
-      authedUserId(req as AuthedRequest),
+      (req as AuthedRequest).userId,
     );
 
     res.json({ events });

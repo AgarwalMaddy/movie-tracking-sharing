@@ -1,15 +1,20 @@
 import { type FormEvent, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { api, bustCache, setToken } from '@/lib/api';
 import { fieldString } from '@/lib/form';
+import { safeNext, withNext } from '@/lib/next-path';
 
+import { AuthExtras } from './auth-actions';
 import { useAuth } from './auth-context';
 
 export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
-  const { refresh } = useAuth();
+  const { refresh, user, ready } = useAuth();
   const nav = useNavigate();
+  const [params] = useSearchParams();
+  const next = safeNext(params.get('next'));
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -34,7 +39,7 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
 
         bustCache();
         await refresh();
-        void nav('/discover');
+        void nav(next);
       } else {
         const data = await api<{ accessToken: string }>('/auth/login', {
           method: 'POST',
@@ -47,11 +52,19 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
         setToken(data.accessToken);
         bustCache();
         await refresh();
-        void nav('/discover');
+        void nav(next);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed');
     }
+  }
+
+  if (!ready) {
+    return <main className="auth-wrap">Loading…</main>;
+  }
+
+  if (user) {
+    return <Navigate to={next} replace />;
   }
 
   return (
@@ -79,22 +92,37 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
           Email
           <input name="email" type="email" required />
         </label>
-        <label className="field">
+        <label className="field field-password">
           Password
-          <input name="password" type="password" required minLength={8} />
+          <input
+            name="password"
+            type={showPassword ? 'text' : 'password'}
+            required
+            minLength={8}
+          />
+          <button
+            type="button"
+            className="password-toggle"
+            onClick={() => setShowPassword((v) => !v)}
+          >
+            {showPassword ? 'Hide' : 'Show'}
+          </button>
         </label>
-        {error ? <p className="error">{error}</p> : null}
+        {error || params.get('error') === 'google' ? (
+          <p className="error">{error || 'Google sign-in failed'}</p>
+        ) : null}
         <button className="btn" type="submit">
           {mode === 'signup' ? 'Create account' : 'Sign in'}
         </button>
         <p className="muted" style={{ marginTop: 12 }}>
           {mode === 'signup' ? (
-            <Link to="/login">Already have an account</Link>
+            <Link to={withNext('/login', next)}>Already have an account</Link>
           ) : (
-            <Link to="/signup">Create one</Link>
+            <Link to={withNext('/signup', next)}>Create one</Link>
           )}
         </p>
       </form>
+      <AuthExtras next={next} />
     </main>
   );
 }

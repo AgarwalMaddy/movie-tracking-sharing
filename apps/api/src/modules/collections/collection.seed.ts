@@ -392,36 +392,33 @@ async function titleForSeed(tmdbId: number, mediaType: 'MOVIE' | 'TV') {
     return existing;
   }
 
-  void getOrFetchTitle(tmdbId, mediaType).catch(() => undefined);
+  try {
+    return await getOrFetchTitle(tmdbId, mediaType);
+  } catch {
+    if (existing) {
+      return existing;
+    }
 
-  if (existing) {
-    return existing;
+    return upsertTitle({
+      tmdbId,
+      mediaType,
+      title: TITLE_NAMES[tmdbId] ?? `Title ${String(tmdbId)}`,
+      posterPath: null,
+      backdropPath: null,
+      imdbId: null,
+      releaseDate: null,
+      overview: null,
+      runtime: null,
+    });
   }
-
-  return upsertTitle({
-    tmdbId,
-    mediaType,
-    title: TITLE_NAMES[tmdbId] ?? `Title ${String(tmdbId)}`,
-    posterPath: null,
-    backdropPath: null,
-    imdbId: null,
-    releaseDate: null,
-    overview: null,
-    runtime: null,
-  });
 }
 
 export async function seedCollections() {
   for (const pack of PACKS) {
-    let col = await collectionRepository.findBySlug(pack.slug);
-
-    if (col && col.items.length >= pack.titles.length) {
-      continue;
-    }
-
     const titles = await Promise.all(
       pack.titles.map((t) => titleForSeed(t.tmdbId, t.mediaType)),
     );
+    let col = await collectionRepository.findBySlug(pack.slug);
 
     col ??= await collectionRepository.createCollection({
       slug: pack.slug,
@@ -431,6 +428,7 @@ export async function seedCollections() {
 
     const have = new Set(col.items.map((i) => i.titleId));
     let order = col.items.length;
+    let added = 0;
 
     for (const title of titles) {
       if (have.has(title.id)) {
@@ -438,9 +436,12 @@ export async function seedCollections() {
       }
 
       await collectionRepository.addItem(col.id, title.id, order++);
+      added += 1;
     }
 
-    console.warn(`seeded ${pack.slug} (${String(titles.length)} titles)`);
+    if (added) {
+      console.warn(`seeded ${pack.slug} (${String(titles.length)} titles)`);
+    }
   }
 
   forget('collections:all');

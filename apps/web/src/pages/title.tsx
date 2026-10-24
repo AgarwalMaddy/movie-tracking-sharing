@@ -1,7 +1,8 @@
 import { type FormEvent, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth';
+import { CastStrip } from '@/features/titles';
 import {
   api,
   peek,
@@ -11,10 +12,13 @@ import {
   type WatchOffer,
 } from '@/lib/api';
 import { errMessage } from '@/lib/err-message';
+import { withNext } from '@/lib/next-path';
 
 export function TitlePage() {
   const { mediaType = 'MOVIE', tmdbId = '' } = useParams();
   const { user } = useAuth();
+  const loc = useLocation();
+  const loginHref = withNext('/login', loc.pathname);
   const path = `/titles/${mediaType}/${tmdbId}`;
   const [data, setData] = useState<null | {
     title: Title;
@@ -83,21 +87,6 @@ export function TitlePage() {
             alt=""
           />
         ) : null}
-        {(data.cast ?? []).filter((c) => c.imageUrl).length ? (
-          <div className="presence-cast title-cast" aria-hidden="true">
-            {(data.cast ?? [])
-              .filter((c) => c.imageUrl)
-              .slice(0, 5)
-              .map((c, i, all) => (
-                <img
-                  key={c.id}
-                  src={c.imageUrl ?? ''}
-                  alt=""
-                  style={{ zIndex: all.length - i }}
-                />
-              ))}
-          </div>
-        ) : null}
         <div className="copy">
           <p className="muted">
             {t.mediaType} {t.releaseDate?.slice(0, 4)}
@@ -154,9 +143,13 @@ export function TitlePage() {
               </button>
             </div>
           ) : (
-            <p>
-              <Link to="/login">Sign in</Link> to log this.
-            </p>
+            <div className="row">
+              {['Want', 'Watching', 'Watched', 'Add to list'].map((label) => (
+                <Link key={label} className="chip" to={loginHref}>
+                  {label}
+                </Link>
+              ))}
+            </div>
           )}
           {listsOpen ? (
             <div className="chips">
@@ -177,6 +170,12 @@ export function TitlePage() {
           {msg ? <p className="muted">{msg}</p> : null}
         </div>
       </section>
+      {(data.cast ?? []).length ? (
+        <section className="cast-block" aria-labelledby="cast-heading">
+          <h2 id="cast-heading">Cast</h2>
+          <CastStrip cast={data.cast} />
+        </section>
+      ) : null}
       <div className="page-inner" style={{ paddingTop: 24 }}>
         {data.friendStatuses.length ? (
           <p className="muted">
@@ -203,15 +202,28 @@ export function TitlePage() {
             </button>
           </form>
         ) : null}
-        {data.reviews.map((r) => (
-          <article key={r.id} style={{ marginTop: 16 }}>
-            <strong>
-              <Link to={`/u/${r.user.username}`}>@{r.user.username}</Link>
-            </strong>
-            {r.rating ? <span className="muted"> {r.rating}/10</span> : null}
-            <p>{r.body}</p>
-          </article>
-        ))}
+        {data.reviews.length ? (
+          data.reviews.map((r) => (
+            <article key={r.id} style={{ marginTop: 16 }}>
+              <strong>
+                <Link to={`/u/${r.user.username}`}>@{r.user.username}</Link>
+              </strong>
+              {r.rating ? <span className="muted"> {r.rating}/10</span> : null}
+              <p>{r.body}</p>
+            </article>
+          ))
+        ) : (
+          <p className="muted">
+            {user ? (
+              'No reviews yet.'
+            ) : (
+              <>
+                No reviews yet.{' '}
+                <Link to={loginHref}>Sign in</Link> to write the first.
+              </>
+            )}
+          </p>
+        )}
       </div>
     </main>
   );

@@ -21,4 +21,9 @@ export const RESERVED_USERNAMES = new Set([
   'www',
   'search',
   'activity',
+  'demo',
 ]);
+
+export const DEMO_EMAIL = 'demo@reelwright.local';
+export const DEMO_USERNAME = 'demo';
+export const OAUTH_STATE_COOKIE = 'mts_oauth';

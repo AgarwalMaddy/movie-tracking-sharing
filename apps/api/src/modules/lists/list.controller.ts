@@ -3,6 +3,7 @@ import type { RequestHandler } from 'express';
 import {
   authedUserId,
   paramString,
+  queryString,
   type AuthedRequest,
 } from '#middlewares/auth.js';
 
@@ -33,6 +34,16 @@ export const addItem: RequestHandler = async (req, res, next) => {
     );
 
     res.json({ item });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const browse: RequestHandler = async (req, res, next) => {
+  try {
+    const lists = await listService.browsePublicLists(queryString(req, 'q'));
+
+    res.json({ lists });
   } catch (error) {
     next(error);
   }

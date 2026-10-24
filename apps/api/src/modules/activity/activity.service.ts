@@ -2,9 +2,13 @@ import { toPublicUser } from '#utils/to-public-user.js';
 
 import * as activityRepository from './activity.repository.js';
 
-export async function getFeed(userId: string) {
-  const friendIds = await activityRepository.findFriendIds(userId);
-  const events = await activityRepository.findFeedFor([userId, ...friendIds]);
+export async function getFeed(userId?: string) {
+  const events = userId
+    ? await activityRepository.findFeedFor([
+        userId,
+        ...(await activityRepository.findFriendIds(userId)),
+      ])
+    : await activityRepository.findRecent();
 
   return events.map((e) => ({
     id: e.id,

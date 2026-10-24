@@ -25,6 +25,30 @@ export async function findSummariesByUser(userId: string) {
   });
 }
 
+export async function findRecent(q = '') {
+  const query = q.trim();
+
+  return db.list.findMany({
+    where: {
+      items: { some: {} },
+      ...(query
+        ? { name: { contains: query, mode: 'insensitive' as const } }
+        : {}),
+    },
+    include: {
+      user: true,
+      _count: { select: { items: true } },
+      items: {
+        take: 4,
+        include: { title: true },
+        orderBy: { addedAt: 'desc' },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 24,
+  });
+}
+
 export async function findMine(userId: string) {
   return db.list.findMany({
     where: { userId },

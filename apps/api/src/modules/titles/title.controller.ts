@@ -6,6 +6,7 @@ import {
   queryString,
   type AuthedRequest,
 } from '#middlewares/auth.js';
+import { setPublicCache } from '#utils/http-cache.js';
 
 import * as titleService from './title.service.js';
 
@@ -23,6 +24,7 @@ export const search: RequestHandler = async (req, res, next) => {
 
 export const discover: RequestHandler = async (_req, res, next) => {
   try {
+    setPublicCache(res, 60);
     res.json(await titleService.discoverRails());
   } catch (error) {
     next(error);
@@ -41,7 +43,12 @@ export const people: RequestHandler = async (req, res, next) => {
   try {
     const role = queryString(req, 'role', 'actor');
 
-    if (role !== 'actor' && role !== 'actress' && role !== 'director') {
+    if (
+      role !== 'actor' &&
+      role !== 'actress' &&
+      role !== 'director' &&
+      role !== 'cast'
+    ) {
       throw new ValidationError('Bad role');
     }
 

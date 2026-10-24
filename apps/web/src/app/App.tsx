@@ -1,8 +1,16 @@
 import { type ReactNode } from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from 'react-router-dom';
 
 import { AuthProvider, useAuth } from '@/features/auth';
+import { withNext } from '@/lib/next-path';
 import { Activity } from '@/pages/activity';
+import { AuthCallbackPage } from '@/pages/auth-callback';
 import { CollectionsPage } from '@/pages/collections';
 import { Discover } from '@/pages/discover';
 import { Friends } from '@/pages/friends';
@@ -24,13 +32,16 @@ import { Shell } from './shell';
 
 function Guard({ children }: { children: ReactNode }) {
   const { user, ready } = useAuth();
+  const loc = useLocation();
 
   if (!ready) {
     return <main className="page">Loading…</main>;
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return (
+      <Navigate to={withNext('/login', loc.pathname + loc.search)} replace />
+    );
   }
 
   return <>{children}</>;
@@ -43,10 +54,13 @@ function AppRoutes() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route path="/discover" element={<Discover />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/title/:mediaType/:tmdbId" element={<TitlePage />} />
         <Route path="/reviews" element={<ReviewsPage />} />
+        <Route path="/lists" element={<ListsPage />} />
+        <Route path="/activity" element={<Activity />} />
         <Route path="/collections" element={<CollectionsPage />} />
         <Route path="/u/:username" element={<Profile />} />
         <Route path="/u/:username/list/:slug" element={<ListDetail />} />
@@ -59,26 +73,10 @@ function AppRoutes() {
           }
         />
         <Route
-          path="/lists"
-          element={
-            <Guard>
-              <ListsPage />
-            </Guard>
-          }
-        />
-        <Route
           path="/history"
           element={
             <Guard>
               <HistoryPage />
-            </Guard>
-          }
-        />
-        <Route
-          path="/activity"
-          element={
-            <Guard>
-              <Activity />
             </Guard>
           }
         />

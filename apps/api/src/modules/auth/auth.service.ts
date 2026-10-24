@@ -1,3 +1,5 @@
+import { randomBytes } from 'node:crypto';
+
 import bcrypt from 'bcryptjs';
 
 import { env } from '#config/env.js';
@@ -8,7 +10,12 @@ import {
 } from '#errors/app-error.js';
 import { toPublicUser } from '#utils/to-public-user.js';
 
-import { RESERVED_USERNAMES, USERNAME_RE } from './auth.constants.js';
+import {
+  DEMO_EMAIL,
+  DEMO_USERNAME,
+  RESERVED_USERNAMES,
+  USERNAME_RE,
+} from './auth.constants.js';
 import * as authRepository from './auth.repository.js';
 import type { LoginInput, SignupInput } from './auth.schema.js';
 
@@ -84,6 +91,31 @@ export async function login(input: LoginInput) {
     throw new AppError({ code: 'USERNAME_REQUIRED' });
   }
 
+  const token = await authRepository.createSession(user.id);
+
+  return { accessToken: token, user: toPublicUser(user) };
+}
+
+export async function ensureDemoUser() {
+  const existing = await authRepository.findUserByEmail(DEMO_EMAIL);
+
+  if (existing) {
+    return existing;
+  }
+
+  const passwordHash = await bcrypt.hash(randomBytes(24).toString('hex'), 12);
+
+  return authRepository.createUser({
+    name: 'Demo',
+    email: DEMO_EMAIL,
+    username: DEMO_USERNAME,
+    passwordHash,
+    emailVerified: new Date(),
+  });
+}
+
+export async function loginDemo() {
+  const user = await ensureDemoUser();
   const token = await authRepository.createSession(user.id);
 
   return { accessToken: token, user: toPublicUser(user) };

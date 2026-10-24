@@ -21,14 +21,14 @@ Prisma CLI loads `.env` in the repo root. Keep `DATABASE_URL` there or in `.env.
 
 ## Env
 
-| Variable | Required | Notes |
-|----------|----------|-------|
-| `DATABASE_URL` | Yes | Neon URL with `sslmode=require` |
-| `TMDB_API_KEY` | Yes | Server only. v3 key or v4 read token (`eyJ…`). User-Agent is set in `apps/api/src/integrations/tmdb.ts` |
-| `TMDB_DNS_SERVERS` | No | Comma-separated resolvers for `api.themoviedb.org`. Default `1.1.1.1,8.8.8.8,1.0.0.1`. Some ISP DNS returns a blocked IP. |
-| `SESSION_SECRET` | Required in production | Dev falls back to a local default |
-| `WEB_ORIGIN` | No | Default `http://localhost:5173` (CORS) |
-| `GOOGLE_CLIENT_*` | Unused | Google login is not implemented yet |
+| Variable                                    | Required               | Notes                                                                                                                     |
+| ------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                              | Yes                    | Neon URL with `sslmode=require`                                                                                           |
+| `TMDB_API_KEY`                              | Yes                    | Server only. v3 key or v4 read token (`eyJ…`). User-Agent is set in `apps/api/src/integrations/tmdb.ts`                   |
+| `TMDB_DNS_SERVERS`                          | No                     | Comma-separated resolvers for `api.themoviedb.org`. Default `1.1.1.1,8.8.8.8,1.0.0.1`. Some ISP DNS returns a blocked IP. |
+| `SESSION_SECRET`                            | Required in production | Dev falls back to a local default                                                                                         |
+| `WEB_ORIGIN`                                | No                     | Default `http://localhost:5173` (CORS). Google callback is `{WEB_ORIGIN}/api/auth/google/callback`                        |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | No                     | Both set → Continue with Google. Add that callback URI in Google Cloud                                                    |
 
 Development signup marks the email verified and returns `accessToken`. The SPA stores that token and also sends the `mts_session` cookie when the proxy allows it.
 
@@ -38,15 +38,15 @@ Prisma has no native Windows ARM Node-API engine yet ([prisma#15306](https://git
 
 ## Scripts
 
-| Command | Purpose |
-|---------|---------|
-| `npm run dev` | API + web together |
-| `npm run dev:api` / `dev:web` | One app |
-| `npx prisma db push` | Sync schema to Neon |
-| `npx prisma generate` | Client |
-| `npm run lint` / `lint:fix` | ESLint (both apps) |
-| `npm run format` / `format:check` | Prettier |
-| `npm run typecheck` | `tsc --noEmit` |
+| Command                           | Purpose             |
+| --------------------------------- | ------------------- |
+| `npm run dev`                     | API + web together  |
+| `npm run dev:api` / `dev:web`     | One app             |
+| `npx prisma db push`              | Sync schema to Neon |
+| `npx prisma generate`             | Client              |
+| `npm run lint` / `lint:fix`       | ESLint (both apps)  |
+| `npm run format` / `format:check` | Prettier            |
+| `npm run typecheck`               | `tsc --noEmit`      |
 
 Editor: Prettier on save, ESLint fix on save (`.vscode/settings.json`). Install the recommended Prettier and ESLint extensions.
 

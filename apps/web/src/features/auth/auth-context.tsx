@@ -1,5 +1,6 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -26,7 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [ready, setReady] = useState(false);
 
-  async function refresh() {
+  const refresh = useCallback(async () => {
     try {
       const data = await api<{ user: User }>('/auth/me');
 
@@ -36,17 +37,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setReady(true);
     }
-  }
+  }, []);
 
-  async function logout() {
+  const logout = useCallback(async () => {
     await api('/auth/logout', { method: 'POST' }).catch(() => undefined);
     setToken(null);
     setUser(null);
-  }
+  }, []);
 
   useEffect(() => {
     void refresh();
-  }, []);
+  }, [refresh]);
 
   return (
     <Ctx.Provider value={{ user, ready, refresh, logout }}>

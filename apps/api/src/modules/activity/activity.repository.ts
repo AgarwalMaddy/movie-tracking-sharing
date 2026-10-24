@@ -23,6 +23,14 @@ export async function findFeedFor(userIds: string[]) {
   });
 }
 
+export async function findRecent() {
+  return db.activityEvent.findMany({
+    include: { actor: true },
+    orderBy: { createdAt: 'desc' },
+    take: 50,
+  });
+}
+
 export async function findNotifications(userId: string) {
   return db.notification.findMany({
     where: { userId },

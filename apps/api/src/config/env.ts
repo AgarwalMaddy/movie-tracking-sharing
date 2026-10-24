@@ -52,6 +52,8 @@ export const env = {
   API_URL: process.env.API_URL ?? 'http://localhost:4000',
   TMDB_API_KEY: process.env.TMDB_API_KEY ?? '',
   TMDB_DNS_SERVERS: process.env.TMDB_DNS_SERVERS ?? '1.1.1.1,8.8.8.8,1.0.0.1',
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ?? '',
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ?? '',
   NODE_ENV,
   get isDev() {
     return this.NODE_ENV !== 'production';

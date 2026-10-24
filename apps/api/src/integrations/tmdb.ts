@@ -548,10 +548,7 @@ export async function fetchTmdbCredits(
       (a, b) => (a.order ?? 99) - (b.order ?? 99),
     );
 
-    return rows
-      .filter((p) => p.profile_path)
-      .slice(0, 6)
-      .map((p) => ({
+    return rows.slice(0, 12).map((p) => ({
         id: p.id,
         name: p.name,
         character: p.character ?? null,
@@ -571,10 +568,9 @@ export function toClientCast(p: TmdbCast) {
   };
 }
 
-export async function searchPeople(
-  query: string,
-  role: 'actor' | 'actress' | 'director',
-) {
+export type CreditSearchRole = 'actor' | 'actress' | 'director' | 'cast';
+
+export async function searchPeople(query: string, role: CreditSearchRole) {
   const key = `people:${role}:${query.toLowerCase()}`;
 
   return memo(key, 1000 * 60 * 10, async () => {
@@ -595,6 +591,10 @@ export async function searchPeople(
       .filter((p) => {
         if (role === 'director') {
           return (p.known_for_department ?? '') === 'Directing';
+        }
+
+        if (role === 'cast') {
+          return (p.known_for_department ?? 'Acting') === 'Acting';
         }
 
         if (role === 'actress') {
