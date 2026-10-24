@@ -52,7 +52,7 @@ Editor: Prettier on save, ESLint fix on save (`.vscode/settings.json`). Install 
 
 CI (pull requests): a Prettier job writes formatting and commits `style: apply Prettier` on same-repo PRs. Web and API jobs then typecheck, lint, and `format:check`. The API job also runs `prisma generate` and `npm audit --omit=dev --audit-level=high`. Same checks run on push to `main`, without the auto-commit. Dependabot opens weekly PRs from `.github/dependabot.yml`.
 
-Production (Render): `render.yaml`. One web service, `0.0.0.0:$PORT`, health at `/health`. After `npm run build --workspace=@mts/web`, the API serves the SPA from `apps/web/dist`.
+Production (Render): `render.yaml`. One free web service, `0.0.0.0:$PORT`, health at `/health`. After `npm run build --workspace=@mts/web`, the API serves the SPA from `apps/web/dist`. The old Vercel Git link is ignored (`vercel.json`).
 
 ## Layout
 

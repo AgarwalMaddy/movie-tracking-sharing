@@ -30,7 +30,7 @@ Living scope: `docs/scope.md`.
 | Scope | Draft — `docs/scope.md` |
 | App | Vite SPA + Express API. Catalog rails persist in Postgres. TMDB uses public DNS; bundled rails if both live TMDB and snapshots miss |
 | Auth | Email/password. Dev signup auto-verifies and opens a session. Google OAuth not wired |
-| Infra | Neon, GitHub. `render.yaml` for one Node service (API serves `apps/web/dist`). Not live until that Blueprint is applied |
+| Infra | Neon, GitHub. `render.yaml` for one free Node service (API serves `apps/web/dist`). Vercel Git deploys are off |
 | Security | Helmet, auth rate limit, Dependabot alerts, CI npm audit. CodeQL is not on the free private-repo plan |
 
 ---

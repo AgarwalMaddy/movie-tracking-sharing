@@ -30,7 +30,7 @@ Screens: discover, search, title, library, lists, reviews, friends, inbox, activ
 
 Discover keeps last-good TMDB rails in Postgres so a 429 does not empty the page. Phone chrome is a bottom bar (Discover, Search, Library, You). Title and Discover heroes use TMDB cast stills.
 
-Production: `render.yaml` is one Node service. It builds the SPA and the API serves `/health`, `/api`, then `apps/web/dist`.
+Production: `render.yaml` is one free Node service. It builds the SPA and the API serves `/health`, `/api`, then `apps/web/dist`. The leftover Vercel Git project is ignored so it does not rebuild this repo.
 
 ## Docs
 

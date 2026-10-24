@@ -8,7 +8,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/). This repo is pr
 
 ### Added
 
-- ADR 0002: persist TMDB rails, serve stale catalog, one Render service, helmet/rate-limit, Dependabot, character-presence heroes from TMDB cast stills. TMDB lookups use public DNS; bundled rails cover a total catalog miss.
+- ADR 0002: persist TMDB rails, serve stale catalog, one free Render service, helmet/rate-limit, Dependabot, character-presence heroes from TMDB cast stills. TMDB lookups use public DNS; bundled rails cover a total catalog miss. Vercel Git deploys for this repo are ignored.
 - Spec: `docs/superpowers/specs/2026-10-24-working-product-design.md`.
 
 ### Changed

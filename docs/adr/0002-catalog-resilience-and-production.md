@@ -30,7 +30,7 @@ Option A.
 - TMDB v3 with `Authorization: Bearer` when the key is a JWT, else `api_key`.
 - Resolve `api.themoviedb.org` through public DNS (`1.1.1.1` / `8.8.8.8`). Some ISP resolvers return a dead address. `TMDB_DNS_SERVERS` overrides that list.
 - Bundled rail fallback if live TMDB and Postgres snapshots are both empty. Discover still returns 200.
-- Production: Render Node, `0.0.0.0:$PORT`, static `apps/web/dist` from the same origin.
+- Production: Render Node on the free plan, `0.0.0.0:$PORT`, static `apps/web/dist` from the same origin.
 - Helmet, auth rate limit, required `SESSION_SECRET`.
 - Dependabot + npm audit. No CodeQL on this private repo.
 - Featured Discover/title hero uses TMDB cast stills (ikevinadams reel, translated to web).
