@@ -1,11 +1,5 @@
-import {
-  type FormEvent,
-  type ReactNode,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { type FormEvent, type ReactNode, useEffect, useState } from 'react';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth';
 import { prefetch } from '@/lib/api';
@@ -54,10 +48,10 @@ function PrefetchLink({
 export function Shell({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const nav = useNavigate();
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [more, setMore] = useState(false);
+  const loc = useLocation();
+  const [morePath, setMorePath] = useState<string | null>(null);
   const [q, setQ] = useState('');
-  const searchRef = useRef<HTMLInputElement>(null);
+  const more = morePath === loc.pathname;
 
   useEffect(() => {
     prefetch('/discover');
@@ -65,28 +59,25 @@ export function Shell({ children }: { children: ReactNode }) {
     prefetch('/collections');
   }, []);
 
-  useEffect(() => {
-    if (searchOpen) {
-      searchRef.current?.focus();
-    }
-  }, [searchOpen]);
-
   function goSearch(e: FormEvent) {
     e.preventDefault();
     const query = q.trim();
 
     if (query.length < 2) {
+      void nav('/search');
+
       return;
     }
 
-    setSearchOpen(false);
     void nav(`/search?q=${encodeURIComponent(query)}`);
   }
+
+  const youHref = user ? `/u/${user.username}` : '/login';
 
   return (
     <div className="shell">
       <header className="top">
-        <NavLink to="/" className="brand">
+        <NavLink to={user ? '/discover' : '/'} className="brand">
           Reelwright
         </NavLink>
         <nav className="nav">
@@ -95,20 +86,24 @@ export function Shell({ children }: { children: ReactNode }) {
           <PrefetchLink to="/activity">Activity</PrefetchLink>
           <PrefetchLink to="/collections">Collections</PrefetchLink>
         </nav>
+        <form className="header-search" onSubmit={goSearch}>
+          <label className="sr-only" htmlFor="header-search">
+            Search titles
+          </label>
+          <input
+            id="header-search"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search titles"
+          />
+        </form>
         <div className="spacer" />
         <button
-          className="icon-btn"
-          aria-label="Search"
-          onClick={() => setSearchOpen(true)}
+          className="text-btn"
+          aria-expanded={more}
+          onClick={() => setMorePath(more ? null : loc.pathname)}
         >
-          ⌕
-        </button>
-        <button
-          className="icon-btn"
-          aria-label="More"
-          onClick={() => setMore((v) => !v)}
-        >
-          ···
+          More
         </button>
         {user ? (
           <NavLink to={`/u/${user.username}`} className="avatar">
@@ -119,46 +114,34 @@ export function Shell({ children }: { children: ReactNode }) {
         )}
         {more ? (
           <div className="more-panel">
-            <PrefetchLink to="/discover" onClick={() => setMore(false)}>
-              Discover
-            </PrefetchLink>
-            <PrefetchLink to="/library" onClick={() => setMore(false)}>
+            <PrefetchLink to="/library" onClick={() => setMorePath(null)}>
               Library
             </PrefetchLink>
-            <PrefetchLink to="/reviews" onClick={() => setMore(false)}>
+            <PrefetchLink to="/reviews" onClick={() => setMorePath(null)}>
               Reviews
             </PrefetchLink>
-            <PrefetchLink to="/friends" onClick={() => setMore(false)}>
+            <PrefetchLink to="/friends" onClick={() => setMorePath(null)}>
               Friends
             </PrefetchLink>
-            <PrefetchLink to="/inbox" onClick={() => setMore(false)}>
+            <PrefetchLink to="/inbox" onClick={() => setMorePath(null)}>
               Inbox
             </PrefetchLink>
-            <PrefetchLink to="/history" onClick={() => setMore(false)}>
+            <PrefetchLink to="/history" onClick={() => setMorePath(null)}>
               Watch log
+            </PrefetchLink>
+            <PrefetchLink to="/search" onClick={() => setMorePath(null)}>
+              Search
             </PrefetchLink>
           </div>
         ) : null}
       </header>
-      {searchOpen ? (
-        <div className="overlay">
-          <button
-            type="button"
-            className="overlay-dismiss"
-            aria-label="Close search"
-            onClick={() => setSearchOpen(false)}
-          />
-          <form onSubmit={goSearch}>
-            <input
-              ref={searchRef}
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Search titles"
-            />
-          </form>
-        </div>
-      ) : null}
       <div className="shell-body">{children}</div>
+      <nav className="bottom-nav" aria-label="Primary">
+        <PrefetchLink to="/discover">Discover</PrefetchLink>
+        <PrefetchLink to="/search">Search</PrefetchLink>
+        <PrefetchLink to={user ? '/library' : '/login'}>Library</PrefetchLink>
+        <PrefetchLink to={youHref}>{user ? 'You' : 'Sign in'}</PrefetchLink>
+      </nav>
       <footer className="site-foot">
         <div>
           <strong>Reelwright</strong>
@@ -166,9 +149,9 @@ export function Shell({ children }: { children: ReactNode }) {
         </div>
         <nav>
           <Link to="/discover">Discover</Link>
+          <Link to="/search">Search</Link>
           <Link to="/lists">Lists</Link>
           <Link to="/collections">Collections</Link>
-          <Link to="/activity">Activity</Link>
         </nav>
         <p className="attr">
           This product uses the TMDB API but is not endorsed or certified by

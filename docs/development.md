@@ -24,8 +24,9 @@ Prisma CLI loads `.env` in the repo root. Keep `DATABASE_URL` there or in `.env.
 | Variable | Required | Notes |
 |----------|----------|-------|
 | `DATABASE_URL` | Yes | Neon URL with `sslmode=require` |
-| `TMDB_API_KEY` | Yes | Server only. Node `fetch` to TMDB needs a real User-Agent (already set in `apps/api/src/integrations/tmdb.ts`) |
-| `SESSION_SECRET` | No in dev | Falls back to `NEXTAUTH_SECRET` or a local default |
+| `TMDB_API_KEY` | Yes | Server only. v3 key or v4 read token (`eyJ…`). User-Agent is set in `apps/api/src/integrations/tmdb.ts` |
+| `TMDB_DNS_SERVERS` | No | Comma-separated resolvers for `api.themoviedb.org`. Default `1.1.1.1,8.8.8.8,1.0.0.1`. Some ISP DNS returns a blocked IP. |
+| `SESSION_SECRET` | Required in production | Dev falls back to a local default |
 | `WEB_ORIGIN` | No | Default `http://localhost:5173` (CORS) |
 | `GOOGLE_CLIENT_*` | Unused | Google login is not implemented yet |
 
@@ -49,7 +50,9 @@ Prisma has no native Windows ARM Node-API engine yet ([prisma#15306](https://git
 
 Editor: Prettier on save, ESLint fix on save (`.vscode/settings.json`). Install the recommended Prettier and ESLint extensions.
 
-CI (pull requests): a Prettier job writes formatting and commits `style: apply Prettier` on same-repo PRs. Web and API jobs then typecheck, lint, and `format:check`. The API job also runs `prisma generate`. Same checks run on push to `main`, without the auto-commit.
+CI (pull requests): a Prettier job writes formatting and commits `style: apply Prettier` on same-repo PRs. Web and API jobs then typecheck, lint, and `format:check`. The API job also runs `prisma generate` and `npm audit --omit=dev --audit-level=high`. Same checks run on push to `main`, without the auto-commit. Dependabot opens weekly PRs from `.github/dependabot.yml`.
+
+Production (Render): `render.yaml`. One web service, `0.0.0.0:$PORT`, health at `/health`. After `npm run build --workspace=@mts/web`, the API serves the SPA from `apps/web/dist`.
 
 ## Layout
 

@@ -6,7 +6,7 @@ Repo files are the source of truth. Notion holds summaries.
 |----------|------|--------|
 | Process | [PROCESS.md](PROCESS.md) | — |
 | Product scope | [scope.md](scope.md) | — |
-| ADRs | [adr/](adr/) | — |
+| ADRs | [adr/](adr/) | Latest: [0002 catalog and production](adr/0002-catalog-resilience-and-production.md) |
 | HLD (in flight) | [hld/](hld/) | — |
 | LLD (in flight) | [lld/](lld/) | — |
 | Project README | [../README.md](../README.md) | — |

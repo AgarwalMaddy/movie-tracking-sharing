@@ -1,8 +1,17 @@
 const TOKEN_KEY = 'mts_token';
 const TTL = 1000 * 60 * 5;
+const CATALOG_TTL = 1000 * 60 * 60 * 6;
 const SS = 'mts-cache:';
 const cache = new Map<string, { at: number; data: unknown }>();
 const inflight = new Map<string, Promise<unknown>>();
+
+function ttlFor(path: string) {
+  if (path.startsWith('/discover') || path.startsWith('/titles/')) {
+    return CATALOG_TTL;
+  }
+
+  return TTL;
+}
 
 const USER_RE =
   /^\/(me|library|lists|reviews|friends|inbox|activity|auth|notifications)\b/;
@@ -39,10 +48,15 @@ function persist(key: string, entry: { at: number; data: unknown }) {
   }
 }
 
-function read(key: string) {
+function pathFromKey(key: string) {
+  return key.replace(/^[A-Z]+:/, '');
+}
+
+function read(key: string, allowStale = false) {
+  const ttl = ttlFor(pathFromKey(key));
   const mem = cache.get(key);
 
-  if (mem && Date.now() - mem.at < TTL) {
+  if (mem && (allowStale || Date.now() - mem.at < ttl)) {
     return mem;
   }
 
@@ -55,7 +69,7 @@ function read(key: string) {
 
     const parsed = JSON.parse(raw) as { at: number; data: unknown };
 
-    if (Date.now() - parsed.at >= TTL) {
+    if (!allowStale && Date.now() - parsed.at >= ttl) {
       sessionStorage.removeItem(SS + key);
 
       return null;
@@ -101,6 +115,12 @@ export function bustUserCache() {
 
 export function peek<T>(path: string): T | null {
   const hit = read(`GET:${path}`);
+
+  return hit ? (hit.data as T) : null;
+}
+
+export function peekAny<T>(path: string): T | null {
+  const hit = read(`GET:${path}`, true);
 
   return hit ? (hit.data as T) : null;
 }
@@ -202,6 +222,13 @@ export type Title = {
 };
 
 export type Rail = { id: string; label: string; kind: string; titles: Title[] };
+export type CastMember = {
+  id: number;
+  name: string;
+  character: string | null;
+  imageUrl: string | null;
+};
+export type Featured = { title: Title; cast: CastMember[] };
 export type WatchOffer = { name: string; logoUrl: string | null; type: string };
 export type Genre = { id: number; name: string };
 export type Language = { code: string; name: string };

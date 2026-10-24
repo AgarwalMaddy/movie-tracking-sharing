@@ -28,6 +28,10 @@ Needs `DATABASE_URL` and `TMDB_API_KEY` in `.env` or `.env.local`. In developmen
 
 Screens: discover, search, title, library, lists, reviews, friends, inbox, activity, profile, stats, collections.
 
+Discover keeps last-good TMDB rails in Postgres so a 429 does not empty the page. Phone chrome is a bottom bar (Discover, Search, Library, You). Title and Discover heroes use TMDB cast stills.
+
+Production: `render.yaml` is one Node service. It builds the SPA and the API serves `/health`, `/api`, then `apps/web/dist`.
+
 ## Docs
 
 Work is still **scope → ADR → HLD → LLD** for new slices. Index: [docs/README.md](docs/README.md). Setup: [docs/development.md](docs/development.md).

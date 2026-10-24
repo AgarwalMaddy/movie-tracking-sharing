@@ -1,9 +1,134 @@
+import { lookup as osLookup, Resolver } from 'node:dns/promises';
+import https from 'node:https';
+
 import { z } from 'zod';
 
 import { env } from '#config/env.js';
 import { memo } from '#utils/cache.js';
 
-const TMDB = 'https://api.themoviedb.org/3';
+const TMDB_HOST = 'api.themoviedb.org';
+const TMDB = `https://${TMDB_HOST}/3`;
+const DNS_TTL_MS = 1000 * 60 * 5;
+const publicDns = new Resolver();
+
+publicDns.setServers(
+  env.TMDB_DNS_SERVERS.split(',')
+    .map((s) => s.trim())
+    .filter(Boolean),
+);
+
+let cachedIp: { ip: string; at: number } | null = null;
+
+async function tmdbIp(): Promise<string> {
+  if (cachedIp && Date.now() - cachedIp.at < DNS_TTL_MS) {
+    return cachedIp.ip;
+  }
+
+  try {
+    const addrs = await publicDns.resolve4(TMDB_HOST);
+    const ip = addrs[0];
+
+    if (!ip) {
+      throw new Error('no A record');
+    }
+
+    cachedIp = { ip, at: Date.now() };
+
+    return ip;
+  } catch {
+    const hit = await osLookup(TMDB_HOST, { family: 4 });
+
+    cachedIp = { ip: hit.address, at: Date.now() };
+
+    return hit.address;
+  }
+}
+
+function headerMap(headers: HeadersInit): Record<string, string> {
+  if (headers instanceof Headers) {
+    return Object.fromEntries(headers.entries());
+  }
+
+  if (Array.isArray(headers)) {
+    return Object.fromEntries(headers);
+  }
+
+  return { ...headers };
+}
+
+function isRetryable(error: unknown): boolean {
+  if (!(error instanceof Error)) {
+    return true;
+  }
+
+  if (error.name === 'AbortError' || error.name === 'TimeoutError') {
+    return false;
+  }
+
+  const { message } = error;
+
+  return (
+    message !== 'TMDB 401' &&
+    message !== 'TMDB 404' &&
+    !message.startsWith('TMDB 4')
+  );
+}
+
+async function tmdbHttp(url: string): Promise<unknown> {
+  const parsed = new URL(url);
+  const ip = await tmdbIp();
+  const headers = headerMap(tmdbHeaders());
+
+  return new Promise((resolve, reject) => {
+    const req = https.request(
+      {
+        host: ip,
+        port: 443,
+        servername: parsed.hostname,
+        path: `${parsed.pathname}${parsed.search}`,
+        method: 'GET',
+        setHost: false,
+        timeout: 8000,
+        headers: {
+          ...headers,
+          Host: parsed.hostname,
+        },
+      },
+      (res) => {
+        const chunks: Buffer[] = [];
+
+        res.on('data', (chunk: Buffer) => {
+          chunks.push(chunk);
+        });
+        res.on('end', () => {
+          const status = res.statusCode ?? 0;
+          const body = Buffer.concat(chunks).toString('utf8');
+
+          if (status < 200 || status >= 300) {
+            reject(new Error(`TMDB ${String(status)}`));
+
+            return;
+          }
+
+          try {
+            resolve(JSON.parse(body) as unknown);
+          } catch {
+            reject(new Error('TMDB bad json'));
+          }
+        });
+      },
+    );
+
+    req.on('timeout', () => {
+      req.destroy();
+      reject(
+        Object.assign(new Error('TMDB timeout'), { name: 'TimeoutError' }),
+      );
+    });
+    req.on('error', reject);
+    req.end();
+  });
+}
 
 export type MediaType = 'MOVIE' | 'TV';
 
@@ -37,32 +162,44 @@ const listItem = z.object({
   overview: z.string().optional(),
 });
 
-async function tmdb(path: string, attempt = 0): Promise<unknown> {
-  if (!env.TMDB_API_KEY) {
+function tmdbHeaders(): HeadersInit {
+  const headers: Record<string, string> = {
+    Accept: 'application/json',
+    'User-Agent': 'Reelwright/0.1 (movie-tracking-sharing)',
+  };
+  const key = env.TMDB_API_KEY;
+
+  if (key.startsWith('eyJ')) {
+    headers.Authorization = `Bearer ${key}`;
+  }
+
+  return headers;
+}
+
+function tmdbUrl(path: string): string {
+  const key = env.TMDB_API_KEY;
+
+  if (!key) {
     throw new Error('TMDB_API_KEY not configured');
+  }
+
+  if (key.startsWith('eyJ')) {
+    return `${TMDB}${path}`;
   }
 
   const join = path.includes('?') ? '&' : '?';
 
+  return `${TMDB}${path}${join}api_key=${encodeURIComponent(key)}`;
+}
+
+async function tmdb(path: string, attempt = 0): Promise<unknown> {
   try {
-    const res = await fetch(
-      `${TMDB}${path}${join}api_key=${env.TMDB_API_KEY}`,
-      {
-        headers: {
-          Accept: 'application/json',
-          'User-Agent': 'Reelwright/0.1 (local; movie-tracking-sharing)',
-        },
-      },
-    );
-
-    if (!res.ok) {
-      throw new Error(`TMDB ${res.status}`);
-    }
-
-    return await res.json();
+    return await tmdbHttp(tmdbUrl(path));
   } catch (e) {
-    if (attempt < 2) {
-      return await tmdb(path, attempt + 1);
+    if (isRetryable(e) && attempt < 2) {
+      await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
+
+      return tmdb(path, attempt + 1);
     }
 
     throw e;
@@ -383,6 +520,55 @@ export async function browseTmdb(opts: {
 
     return catalogTmdb(path, opts.kind === 'tv' ? 'TV' : 'MOVIE');
   });
+}
+
+export type TmdbCast = {
+  id: number;
+  name: string;
+  character: string | null;
+  profilePath: string | null;
+};
+
+export async function fetchTmdbCredits(
+  tmdbId: number,
+  mediaType: MediaType,
+): Promise<TmdbCast[]> {
+  return memo(`credits:${mediaType}:${tmdbId}`, 1000 * 60 * 20, async () => {
+    const kind = mediaType === 'MOVIE' ? 'movie' : 'tv';
+    const data = (await tmdb(`/${kind}/${tmdbId}/credits`)) as {
+      cast?: {
+        id: number;
+        name: string;
+        character?: string | null;
+        profile_path?: string | null;
+        order?: number;
+      }[];
+    };
+    const rows = [...(data.cast ?? [])].sort(
+      (a, b) => (a.order ?? 99) - (b.order ?? 99),
+    );
+
+    return rows
+      .filter((p) => p.profile_path)
+      .slice(0, 6)
+      .map((p) => ({
+        id: p.id,
+        name: p.name,
+        character: p.character ?? null,
+        profilePath: p.profile_path ?? null,
+      }));
+  });
+}
+
+export function toClientCast(p: TmdbCast) {
+  return {
+    id: p.id,
+    name: p.name,
+    character: p.character,
+    imageUrl: p.profilePath
+      ? `https://image.tmdb.org/t/p/h632${p.profilePath}`
+      : null,
+  };
 }
 
 export async function searchPeople(

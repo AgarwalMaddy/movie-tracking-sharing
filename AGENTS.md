@@ -28,9 +28,10 @@ Living scope: `docs/scope.md`.
 |------|-------|
 | Process | Scope → ADR → HLD → LLD → implement → test / monitor / deploy |
 | Scope | Draft — `docs/scope.md` |
-| App | Working local MVP: `apps/web` (Vite React) + `apps/api` (Express) |
+| App | Vite SPA + Express API. Catalog rails persist in Postgres. TMDB uses public DNS; bundled rails if both live TMDB and snapshots miss |
 | Auth | Email/password. Dev signup auto-verifies and opens a session. Google OAuth not wired |
-| Infra | Neon, GitHub, local `.env` / `.env.local`. API is Node; SPA can be static |
+| Infra | Neon, GitHub. `render.yaml` for one Node service (API serves `apps/web/dist`). Not live until that Blueprint is applied |
+| Security | Helmet, auth rate limit, Dependabot alerts, CI npm audit. CodeQL is not on the free private-repo plan |
 
 ---
 

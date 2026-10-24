@@ -32,17 +32,27 @@ function req(name: string, fallback?: string) {
   return v;
 }
 
+const NODE_ENV = process.env.NODE_ENV ?? 'development';
+const isDev = NODE_ENV !== 'production';
+const DEV_SESSION_SECRET = 'dev-only-change-me-32-chars-min!!';
+const SESSION_SECRET =
+  process.env.SESSION_SECRET ??
+  process.env.NEXTAUTH_SECRET ??
+  DEV_SESSION_SECRET;
+
+if (!isDev && SESSION_SECRET === DEV_SESSION_SECRET) {
+  throw new Error('SESSION_SECRET is required in production');
+}
+
 export const env = {
   PORT: Number(process.env.PORT ?? 4000),
   DATABASE_URL: req('DATABASE_URL'),
-  SESSION_SECRET:
-    process.env.SESSION_SECRET ??
-    process.env.NEXTAUTH_SECRET ??
-    'dev-only-change-me-32-chars-min!!',
+  SESSION_SECRET,
   WEB_ORIGIN: process.env.WEB_ORIGIN ?? 'http://localhost:5173',
   API_URL: process.env.API_URL ?? 'http://localhost:4000',
   TMDB_API_KEY: process.env.TMDB_API_KEY ?? '',
-  NODE_ENV: process.env.NODE_ENV ?? 'development',
+  TMDB_DNS_SERVERS: process.env.TMDB_DNS_SERVERS ?? '1.1.1.1,8.8.8.8,1.0.0.1',
+  NODE_ENV,
   get isDev() {
     return this.NODE_ENV !== 'production';
   },

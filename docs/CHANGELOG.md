@@ -6,6 +6,11 @@ Format based on [Keep a Changelog](https://keepachangelog.com/). This repo is pr
 
 ## [Unreleased]
 
+### Added
+
+- ADR 0002: persist TMDB rails, serve stale catalog, one Render service, helmet/rate-limit, Dependabot, character-presence heroes from TMDB cast stills. TMDB lookups use public DNS; bundled rails cover a total catalog miss.
+- Spec: `docs/superpowers/specs/2026-10-24-working-product-design.md`.
+
 ### Changed
 
 - API and web source now follow TravelTogether's folder and writing rules (adapted): API `routes → controller → service → repository` with `#` imports; web `app → pages → features → components → lib` with `@/`. Prisma stays the data layer. SPA errors stay `{ error, code }`. Guides: `apps/api/AGENTS.md`, `apps/web/AGENTS.md`.

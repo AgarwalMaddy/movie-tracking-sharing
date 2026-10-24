@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: reelwright
+    runtime: node
+    plan: starter
+    buildCommand: npm ci && npx prisma generate && npm run build --workspace=@mts/web
+    startCommand: npm run start --workspace=@mts/api
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: TMDB_API_KEY
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: WEB_ORIGIN
+        sync: false

@@ -98,6 +98,9 @@ jobs:
           cache: npm
       - run: npm ci
         working-directory: .
+      - name: Audit production deps
+        run: npm audit --omit=dev --audit-level=critical
+        working-directory: .
       - name: Generate Prisma client
         run: npx prisma generate
         working-directory: .

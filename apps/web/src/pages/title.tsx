@@ -2,7 +2,14 @@ import { type FormEvent, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth';
-import { api, peek, type Title, type User, type WatchOffer } from '@/lib/api';
+import {
+  api,
+  peek,
+  type CastMember,
+  type Title,
+  type User,
+  type WatchOffer,
+} from '@/lib/api';
 import { errMessage } from '@/lib/err-message';
 
 export function TitlePage() {
@@ -11,6 +18,7 @@ export function TitlePage() {
   const path = `/titles/${mediaType}/${tmdbId}`;
   const [data, setData] = useState<null | {
     title: Title;
+    cast: CastMember[];
     providers: WatchOffer[];
     mine: { status: string; rating: number | null } | null;
     myLists: { id: string; name: string }[];
@@ -74,6 +82,21 @@ export function TitlePage() {
             src={t.backdropUrl || t.posterUrl || ''}
             alt=""
           />
+        ) : null}
+        {(data.cast ?? []).filter((c) => c.imageUrl).length ? (
+          <div className="presence-cast title-cast" aria-hidden="true">
+            {(data.cast ?? [])
+              .filter((c) => c.imageUrl)
+              .slice(0, 5)
+              .map((c, i, all) => (
+                <img
+                  key={c.id}
+                  src={c.imageUrl ?? ''}
+                  alt=""
+                  style={{ zIndex: all.length - i }}
+                />
+              ))}
+          </div>
         ) : null}
         <div className="copy">
           <p className="muted">

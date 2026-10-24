@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 
-import { PosterGrid, Rail as PosterRail } from '@/features/titles';
+import { PosterGrid, Presence, Rail as PosterRail } from '@/features/titles';
 import {
   api,
   peek,
+  peekAny,
+  type Featured,
   type Genre,
   type Language,
   type Person,
@@ -41,10 +43,19 @@ const LANG_FALLBACK: Language[] = [
 type FilterCat =
   'year' | 'genre' | 'actor' | 'actress' | 'director' | 'language';
 
+type DiscoverPayload = {
+  rails: Rail[];
+  featured?: Featured | null;
+  stale?: boolean;
+};
+
 export function Discover() {
-  const [rails, setRails] = useState<Rail[]>(
-    () => peek<{ rails: Rail[] }>('/discover')?.rails ?? [],
+  const cached = peekAny<DiscoverPayload>('/discover');
+  const [rails, setRails] = useState<Rail[]>(() => cached?.rails ?? []);
+  const [featured, setFeatured] = useState<Featured | null>(
+    () => cached?.featured ?? null,
   );
+  const [stale, setStale] = useState(Boolean(cached?.stale));
   const [kind, setKind] = useState<'all' | 'movie' | 'tv'>('all');
   const [sort, setSort] = useState('trending');
   const [err, setErr] = useState('');
@@ -68,9 +79,27 @@ export function Discover() {
   const filtering = Boolean(year || genre || language || person);
 
   useEffect(() => {
-    void api<{ rails: Rail[] }>('/discover')
-      .then((d) => setRails(d.rails))
-      .catch((e: unknown) => setErr(errMessage(e)));
+    void api<DiscoverPayload>('/discover')
+      .then((d) => {
+        setRails(d.rails);
+        setFeatured(d.featured ?? null);
+        setStale(Boolean(d.stale));
+        setErr('');
+      })
+      .catch((e: unknown) => {
+        const fallback = peekAny<DiscoverPayload>('/discover');
+
+        if (fallback?.rails.length) {
+          setRails(fallback.rails);
+          setFeatured(fallback.featured ?? null);
+          setStale(true);
+          setErr('Showing saved titles. Catalog is catching up.');
+
+          return;
+        }
+
+        setErr(errMessage(e));
+      });
     void api<{ genres: Genre[]; languages: Language[] }>('/discover/meta')
       .then((d) => {
         setGenres(d.genres);
@@ -177,13 +206,17 @@ export function Discover() {
 
   return (
     <main className="page">
-      <div className="hero-block">
-        <h1>Discover</h1>
-        <p className="lede">
-          This week, theatres, coming soon, and series. Filter by year, genre,
-          people, or language.
-        </p>
-      </div>
+      {featured ? (
+        <Presence title={featured.title} cast={featured.cast} />
+      ) : (
+        <div className="hero-block">
+          <h1>Discover</h1>
+          <p className="lede">
+            This week, theatres, coming soon, and series. Filter by year, genre,
+            people, or language.
+          </p>
+        </div>
+      )}
       <div className="chips">
         {(['all', 'movie', 'tv'] as const).map((k) => (
           <button
@@ -315,6 +348,9 @@ export function Discover() {
             </button>
           ))}
         </div>
+      ) : null}
+      {stale && !err ? (
+        <p className="muted page-inner">Showing the last saved catalog.</p>
       ) : null}
       {err ? <p className="error">{err}</p> : null}
       {filtering ? (

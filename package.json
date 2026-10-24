@@ -16,7 +16,9 @@
     "lint:fix": "npm run lint:fix --workspaces --if-present",
     "format": "npm run format --workspaces --if-present",
     "format:check": "npm run format:check --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "start": "npm run start --workspace=@mts/api",
+    "build": "npm run build --workspace=@mts/web"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

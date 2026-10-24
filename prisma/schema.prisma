@@ -281,3 +281,9 @@ model CollectionItem {
 
   @@unique([collectionId, titleId])
 }
+
+model CatalogSnapshot {
+  id        String   @id
+  payload   Json
+  updatedAt DateTime @updatedAt
+}
