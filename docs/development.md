@@ -24,7 +24,7 @@ Prisma CLI loads `.env` in the repo root. Keep `DATABASE_URL` there or in `.env.
 | Variable | Required | Notes |
 |----------|----------|-------|
 | `DATABASE_URL` | Yes | Neon URL with `sslmode=require` |
-| `TMDB_API_KEY` | Yes | Server only. Node `fetch` to TMDB needs a real User-Agent (already set in `tmdb.ts`) |
+| `TMDB_API_KEY` | Yes | Server only. Node `fetch` to TMDB needs a real User-Agent (already set in `apps/api/src/integrations/tmdb.ts`) |
 | `SESSION_SECRET` | No in dev | Falls back to `NEXTAUTH_SECRET` or a local default |
 | `WEB_ORIGIN` | No | Default `http://localhost:5173` (CORS) |
 | `GOOGLE_CLIENT_*` | Unused | Google login is not implemented yet |
@@ -43,15 +43,25 @@ Prisma has no native Windows ARM Node-API engine yet ([prisma#15306](https://git
 | `npm run dev:api` / `dev:web` | One app |
 | `npx prisma db push` | Sync schema to Neon |
 | `npx prisma generate` | Client |
+| `npm run lint` / `lint:fix` | ESLint (both apps) |
+| `npm run format` / `format:check` | Prettier |
+| `npm run typecheck` | `tsc --noEmit` |
+
+Editor: Prettier on save, ESLint fix on save (`.vscode/settings.json`). Install the recommended Prettier and ESLint extensions.
+
+CI (pull requests): a Prettier job writes formatting and commits `style: apply Prettier` on same-repo PRs. Web and API jobs then typecheck, lint, and `format:check`. The API job also runs `prisma generate`. Same checks run on push to `main`, without the auto-commit.
 
 ## Layout
 
 ```
-apps/api/src/   Express: env, db, http, tmdb, titles, domain, routes, index
-apps/web/src/   React: api.ts, auth.tsx, pages.tsx, App.tsx
-prisma/         Shared schema
-src/            Old Next.js tree. Ignore
+apps/api/src/     Express: app.ts, server.ts, config/, modules/<resource>/
+apps/api/AGENTS.md
+apps/web/src/     React: app/, pages/, features/, lib/
+apps/web/AGENTS.md
+prisma/           Shared schema
 ```
+
+API writing rules: `apps/api/docs/architecture.md` and `conventions.md`. Web: `apps/web/docs/structure.md` and `conventions.md`.
 
 ## Checks worth running by hand
 

@@ -37,4 +37,4 @@ Local repo wins. After material doc changes, sync a summary to the Notion Projec
 
 ## Implementation gate
 
-No `src/` changes until the in-flight feature has an **Accepted** ADR, agreed HLD, and agreed LLD. Do not implement from `docs/archive/` or from the retired V1 spec.
+No `apps/` changes until the in-flight feature has an **Accepted** ADR, agreed HLD, and agreed LLD. Do not implement from `docs/archive/` or from the retired V1 spec.

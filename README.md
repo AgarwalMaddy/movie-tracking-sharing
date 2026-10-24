@@ -16,14 +16,15 @@ npm run dev
 
 Needs `DATABASE_URL` and `TMDB_API_KEY` in `.env` or `.env.local`. In development, signup verifies the email immediately so you can use a throwaway account.
 
+`npm run lint`, `npm run format`, and `npm run typecheck` cover both apps. PRs get a Prettier auto-format commit, then lint and typecheck.
+
 ## Layout
 
 | Path | What |
 |------|------|
-| `apps/web` | React SPA (Vite, React Router) |
-| `apps/api` | Express JSON API, Prisma, TMDB |
+| `apps/web` | React SPA (Vite, React Router). Folders: `app/`, `pages/`, `features/`, `lib/` |
+| `apps/api` | Express JSON API, Prisma, TMDB. Layers: routes → controller → service → repository |
 | `prisma/schema.prisma` | Neon Postgres schema |
-| `src/` | Old Next.js app. Do not extend |
 
 Screens: discover, search, title, library, lists, reviews, friends, inbox, activity, profile, stats, collections.
 

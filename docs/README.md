@@ -14,6 +14,8 @@ Repo files are the source of truth. Notion holds summaries.
 | Changelog | [CHANGELOG.md](CHANGELOG.md) | — |
 | Development | [development.md](development.md) | — |
 | Retired docs | [archive/README.md](archive/README.md) | — |
+| API agent guide | [../apps/api/AGENTS.md](../apps/api/AGENTS.md) | — |
+| Web agent guide | [../apps/web/AGENTS.md](../apps/web/AGENTS.md) | — |
 | Project hub | — | [Project Hub](https://app.notion.com/p/3c4f639a8a4d81d8bdc3e36effd3d48e) |
 
 ## Maintenance

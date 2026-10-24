@@ -8,7 +8,7 @@ Work one feature at a time. Do not write a single ADR for the whole product.
 2. **ADR.** One file per feature in `docs/adr/`. Covers why we do this feature now, options, tech, risks, and the decision. Status starts as Proposed. Implementation waits until Accepted.
 3. **HLD.** `docs/hld/` for that feature. What we pick and why at system level: boundaries, data, main flows, what we will not build in this slice.
 4. **LLD.** `docs/lld/` for that feature. Concrete types, routes or actions, UI surfaces, error cases, test plan.
-5. **Implement.** Only what the LLD lists. Leave the Next.js `src/` frozen until Feature 1 LLD is accepted; then replace it with `apps/web` and `apps/api`.
+5. **Implement.** Only what the LLD lists. Application code lives in `apps/web` and `apps/api`.
 6. **Test, monitor, deploy.** Tests from the LLD. Then monitoring and deploy notes for that feature. Then the next ADR.
 
 ```

@@ -8,6 +8,18 @@ Format based on [Keep a Changelog](https://keepachangelog.com/). This repo is pr
 
 ### Changed
 
+- API and web source now follow TravelTogether's folder and writing rules (adapted): API `routes → controller → service → repository` with `#` imports; web `app → pages → features → components → lib` with `@/`. Prisma stays the data layer. SPA errors stay `{ error, code }`. Guides: `apps/api/AGENTS.md`, `apps/web/AGENTS.md`.
+
+### Added
+
+- ESLint 9 + Prettier 3 per app (`apps/web`, `apps/api`), VS Code format-on-save, and CI that auto-formats PRs then typechecks and lints (same shape as TravelTogether). Root scripts: `lint`, `lint:fix`, `format`, `format:check`, `typecheck`.
+
+### Removed
+
+- Old Next.js tree (`src/`), Playwright/Vitest configs, Sentry/Next config, and the `public/` placeholders. CI now only generates Prisma.
+
+### Changed
+
 - App is `apps/web` + `apps/api` (React Vite + Express). `docs/development.md` and `AGENTS.md` describe that stack. Feature 1 HLD/LLD marked implemented; Google OAuth still not built.
 
 ### Changed

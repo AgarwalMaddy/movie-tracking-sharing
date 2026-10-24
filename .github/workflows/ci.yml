@@ -1,64 +1,106 @@
-name: CI
+name: npm checks
 
 on:
+  pull_request:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
 
-env:
-  DATABASE_URL: ${{ secrets.DATABASE_URL }}
-  NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-  NEXTAUTH_URL: "http://localhost:3000"
-  SKIP_ENV_VALIDATION: "1"
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  lint-and-test:
+  prettier:
+    name: Prettier
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      sha: ${{ steps.sha.outputs.sha }}
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
         with:
-          node-version: 20
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref || github.sha }}
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
           cache: npm
 
       - run: npm ci
 
-      - name: Generate Prisma client
-        run: npx prisma generate
+      - name: Format
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          npm run format --workspace=@mts/web
+          npm run format --workspace=@mts/api
 
-      - name: Lint
-        run: npm run lint
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        with:
+          commit_message: "style: apply Prettier"
+          file_pattern: apps/web apps/api
+          commit_user_name: github-actions[bot]
+          commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
 
-      - name: Unit tests
-        run: npm test
+      - name: Check formatting
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          npm run format:check --workspace=@mts/web
+          npm run format:check --workspace=@mts/api
 
-  e2e:
+      - name: Resolve SHA
+        id: sha
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  web:
+    name: Web checks
+    needs: prettier
     runs-on: ubuntu-latest
-    needs: lint-and-test
+    defaults:
+      run:
+        working-directory: apps/web
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
         with:
-          node-version: 20
+          ref: ${{ needs.prettier.outputs.sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
           cache: npm
-
       - run: npm ci
+        working-directory: .
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run format:check
 
+  api:
+    name: API checks
+    needs: prettier
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      SKIP_ENV_VALIDATION: "1"
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.prettier.outputs.sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+        working-directory: .
       - name: Generate Prisma client
         run: npx prisma generate
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: Run E2E tests
-        run: npx playwright test --project=chromium
-
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 14
+        working-directory: .
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run format:check

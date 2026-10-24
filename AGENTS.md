@@ -31,7 +31,6 @@ Living scope: `docs/scope.md`.
 | App | Working local MVP: `apps/web` (Vite React) + `apps/api` (Express) |
 | Auth | Email/password. Dev signup auto-verifies and opens a session. Google OAuth not wired |
 | Infra | Neon, GitHub, local `.env` / `.env.local`. API is Node; SPA can be static |
-| Leftover | Root `src/` is the old Next.js app. Ignore it |
 
 ---
 
@@ -46,13 +45,17 @@ npm run dev
 
 Web: `http://localhost:5173`. API: `http://localhost:4000`. Vite proxies `/api`.
 
+Lint and format (same idea as TravelTogether): `npm run lint`, `npm run lint:fix`, `npm run format`, `npm run typecheck`. Before finishing a change, lint and typecheck should pass. Warnings are allowed; errors are not. Format-on-save is in `.vscode/settings.json`.
+
 ---
 
 ## Conventions
 
 - Secrets stay on the API (`TMDB_API_KEY`, `DATABASE_URL`, session secret).
 - Client errors: `{ error, code }`. No stack traces.
-- Routes live in `apps/api/src/routes.ts`. Domain helpers in `domain.ts`. UI pages in `apps/web/src/pages.tsx`.
+- API layers: `routes → controller → service → repository`. Prisma stays in repositories. `#alias` imports, `.js` suffix. Details: `apps/api/AGENTS.md`.
+- Web folders: `app → pages → features → components → lib`. `@/` alias. Details: `apps/web/AGENTS.md`.
+- ESLint + Prettier live per app (`apps/web`, `apps/api`). CI formats PRs, then typechecks and lints.
 - Commits only when the user asks.
 
 ---
@@ -66,6 +69,8 @@ Web: `http://localhost:5173`. API: `http://localhost:4000`. Vite proxies `/api`.
 | `docs/adr/` | Per-feature ADRs |
 | `docs/hld/` `docs/lld/` | Design for the feature in flight |
 | `docs/development.md` | Local setup |
+| `apps/api/AGENTS.md` | API layers, imports, errors |
+| `apps/web/AGENTS.md` | Web folders and import direction |
 | `docs/archive/` | Pre-2026-09-19 notes. Not requirements |
 | `README.md` | Human overview |
 
