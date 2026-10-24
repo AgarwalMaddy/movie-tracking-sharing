@@ -3,7 +3,7 @@ services:
     name: reelwright
     runtime: node
     plan: free
-    buildCommand: npm ci && npx prisma generate && npm run build --workspace=@mts/web
+    buildCommand: npm ci --include=dev && npx prisma generate && npm run build --workspace=@mts/web
     startCommand: npm run start --workspace=@mts/api
     healthCheckPath: /health
     envVars:
