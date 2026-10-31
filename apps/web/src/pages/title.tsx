@@ -218,8 +218,8 @@ export function TitlePage() {
               'No reviews yet.'
             ) : (
               <>
-                No reviews yet.{' '}
-                <Link to={loginHref}>Sign in</Link> to write the first.
+                No reviews yet. <Link to={loginHref}>Sign in</Link> to write the
+                first.
               </>
             )}
           </p>

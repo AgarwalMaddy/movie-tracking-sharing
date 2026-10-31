@@ -549,11 +549,11 @@ export async function fetchTmdbCredits(
     );
 
     return rows.slice(0, 12).map((p) => ({
-        id: p.id,
-        name: p.name,
-        character: p.character ?? null,
-        profilePath: p.profile_path ?? null,
-      }));
+      id: p.id,
+      name: p.name,
+      character: p.character ?? null,
+      profilePath: p.profile_path ?? null,
+    }));
   });
 }
 

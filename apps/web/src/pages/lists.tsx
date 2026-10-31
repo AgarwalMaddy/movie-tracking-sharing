@@ -17,9 +17,7 @@ export function ListsPage() {
   const { user } = useAuth();
   const minePath = user?.username ? `/users/${user.username}/lists` : '';
   const [mine, setMine] = useState<ListCard[]>(() =>
-    minePath
-      ? (peek<{ lists: ListCard[] }>(minePath)?.lists ?? [])
-      : [],
+    minePath ? (peek<{ lists: ListCard[] }>(minePath)?.lists ?? []) : [],
   );
   const [community, setCommunity] = useState<ListCard[]>(
     () => peek<{ lists: ListCard[] }>('/lists')?.lists ?? [],
